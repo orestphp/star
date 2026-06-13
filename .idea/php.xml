@@ -1,4 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="PhpIncludePathManager">
+    <include_path>
+      <path value="$PROJECT_DIR$/api/vendor/phpstan/phpstan-nette" />
+      <path value="$PROJECT_DIR$/api/vendor/phpstan/phpstan" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/caching" />
+      <path value="$PROJECT_DIR$/api/vendor/tracy/tracy" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/thanks" />
+      <path value="$PROJECT_DIR$/api/vendor/marc-mabe/php-enum" />
+      <path value="$PROJECT_DIR$/api/vendor/league/fractal" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-php85" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/service-contracts" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-ctype" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-mbstring" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/string" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/filesystem" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/config" />
+      <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-intl-grapheme" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/container" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/clock" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/simple-cache" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/event-dispatcher" />
+      <path value="$PROJECT_DIR$/api/vendor/justinrainbow/json-schema" />
+      <path value="$PROJECT_DIR$/api/vendor/cakephp/utility" />
+      <path value="$PROJECT_DIR$/api/vendor/cakephp/datasource" />
+      <path value="$PROJECT_DIR$/api/vendor/cakephp/database" />
+      <path value="$PROJECT_DIR$/api/vendor/cakephp/core" />
+      <path value="$PROJECT_DIR$/api/vendor/cakephp/chronos" />
+      <path value="$PROJECT_DIR$/api/vendor/composer" />
+      <path value="$PROJECT_DIR$/api/vendor/tomaj/nette-api" />
+      <path value="$PROJECT_DIR$/api/vendor/tomaj/nette-bootstrap-form" />
+      <path value="$PROJECT_DIR$/api/vendor/league/container" />
+      <path value="$PROJECT_DIR$/api/vendor/latte/latte" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/php-generator" />
+      <path value="$PROJECT_DIR$/api/vendor/robmorgan/phinx" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/database" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/bootstrap" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/tester" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/security" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/schema" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/utils" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/routing" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/http" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/application" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/component-model" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/forms" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/robot-loader" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/neon" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/di" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/mail" />
+      <path value="$PROJECT_DIR$/api/vendor/nette/assets" />
+    </include_path>
+  </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />
 </project>

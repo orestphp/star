@@ -4,7 +4,7 @@
    - Nginx:1.18-alpine
    - MySql:8.0
    - phpMyAdmin 2
-   - Laravel v10.50.2 (PHP v8.4.21) 
+   - Nette Framework 3.2
    - Node 22
 
 ## Project Installation
@@ -14,23 +14,25 @@ After 'git clone':
 Make sure you have the right path in "docker-compose.yml:
 ```
 services:
-  # php (app)
+  # PHP (Nette API backend)
   app:
     build:
-      context: ./docker/php
+      context: .
+      dockerfile: docker/php/Dockerfile
     volumes:
-      - ./app:/var/www/crm/app/public
+      - ./api:/var/www/star/api
     networks:
-      - news-network
+      - star-network
 
-  # nginx
-  nginx:
-    build:
-      context: ./docker/nginx
-    ports:
-      - '8080:80'
+  # Node container for running frontend/asset tasks
+  node:
+    image: node:22-bookworm-slim
     volumes:
-      - ./app:/var/www/crm/app/public
+      - ./api:/var/www/star/api
+    working_dir: /var/www/star/api
+    profiles: ["cli"]
+    networks:
+      - star-network
 ```
 ```
 $ make init
@@ -38,24 +40,15 @@ $ make init
 ```
 $ make up
 ```
-- From the ***/var/www/crm/app*** directory:
-    * `sudo chown -R $USER:www-data storage bootstrap/cache`
-    * `sudo chmod -R 775 storage bootstrap/cache`
 
-- From the ***/var/www/crm*** directory:
-   * `docker exec -it crm-app-1 composer install`
-   * `docker exec -it crm-app-1 php artisan key:generate`
-   * `docker exec -it crm-app-1 php artisan migrate`
-   * `docker exec -it crm-app-1 php artisan migrate:fresh --seed`
-   * `docker exec -it crm-app-1 npm install`
-   * `docker exec -it crm-app-1 npm run dev`
-   * Admin: admin@admin.com password
-   * Manager: user@user.com password (all registered users via "web" have role "manager")
-    * Customer: all customers' have same "password"
+- From the ***/var/www/star*** directory:
+   * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api`
+    * ``docker compose exec app vendor/bin/phinx migrate``
+    * ``docker compose exec app vendor/bin/phinx seed:run``
     
-###NOTE: ***"app" and "frontend" test in different Browsers***
-( By the reason that Auth cookie is stored in browser for both "app" and "frontend" )
-
+- Admin credentials:
+   * Admin: admin@admin.com password
+  
 ## app
 http://127.0.0.1:8080/
 
@@ -80,8 +73,5 @@ http://127.0.0.1:8081/
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
 
 ## Development Notes
-  - Project architecture comes with Docker environment and Laravel Breeze Dashboard for "web" and "api".
-  - Admin and Managers can use both "web" and "api", Customers only "api"
-  - For authentication, we use Laravel Sanctum (spatie/laravel-permission)
-  - For media files storage, we use Laravel Media Library (spatie/laravel-medialibrary)
+
   

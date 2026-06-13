@@ -22,11 +22,5 @@ RUN mkdir -p /var/log/mysql && \
     touch /var/log/mysql/error.log && \
     chown -R mysql:mysql /var/log/mysql
 
-COPY docker/mysql/init.sql /docker-entrypoint-initdb.d/init.sql
-COPY docker/mysql/seeds.sql /docker-entrypoint-initdb.d/seeds.sql
-
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD mysqladmin ping -h localhost -u root -p"$MYSQL_ROOT_PASSWORD"
-
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD mysqladmin ping -h localhost -u root -p"$MYSQL_ROOT_PASSWORD"

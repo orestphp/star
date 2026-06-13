@@ -1,7 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpstan/phpstan-nette" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phpstan/phpstan" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/caching" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/tracy/tracy" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/thanks" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/marc-mabe/php-enum" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/fractal" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-php85" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/console" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/service-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-intl-normalizer" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/string" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/filesystem" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/config" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-intl-grapheme" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/container" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/clock" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/simple-cache" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/event-dispatcher" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/justinrainbow/json-schema" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/cakephp/utility" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/cakephp/datasource" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/cakephp/database" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/cakephp/core" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/cakephp/chronos" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/tomaj/nette-api" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/tomaj/nette-bootstrap-form" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/league/container" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/latte/latte" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/php-generator" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/robmorgan/phinx" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/database" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/bootstrap" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/tester" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/security" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/schema" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/utils" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/routing" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/http" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/application" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/component-model" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/forms" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/robot-loader" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/neon" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/di" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/mail" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/nette/assets" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>

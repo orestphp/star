@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-install intl pdo_mysql zip bcmath gd
 
-COPY php.ini /usr/local/etc/php/
+COPY docker/php/php.ini /usr/local/etc/php/
 
 #  Pre-create the system directories Nette needs to write to
 #    and grant ownership to the PHP web user (www-data)
