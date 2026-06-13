@@ -48,6 +48,10 @@ $ make up
     
 - Admin credentials:
    * Admin: admin@admin.com password
+    
+- Run test:
+  `docker compose exec app vendor/bin/tester -p php tests/AdminLoginTest.php`
+
   
 ## app
 http://127.0.0.1:8080/
