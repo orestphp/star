@@ -1,0 +1,13 @@
+frontend/
+
+docker/mysql/data/
+
+.DS_Store
+Thumbs.db
+
+# Nette specific ignores
+api/temp/*
+!api/temp/.gitkeep
+api/log/*
+!api/log/.gitkeep
+api/vendor/
