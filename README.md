@@ -49,9 +49,9 @@ $ make up
 - Admin credentials:
    * Admin: admin@admin.com password
     
-- Run test:
-  `docker compose exec app vendor/bin/tester -p php tests/AdminLoginTest.php`
-
+- Run all tests: (visual resulting with "TEST SUITE SUMMARY")
+  `sudo rm -rf temp/tests/*`
+  `docker compose exec app php tests/run.php`
   
 ## app
 http://127.0.0.1:8080/

@@ -40,7 +40,8 @@
 	},
 	"scripts": {
 		"phpstan": "phpstan analyse",
-		"tester": "tester tests -s"
+		"tester": "tester tests -s",
+		"test": "php tests/run.php"
 	},
 	"minimum-stability": "stable",
 	"config": {

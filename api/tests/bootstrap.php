@@ -1,19 +1,22 @@
 <?php
 // [api/tests/bootstrap.php]
 
+declare(strict_types=1);
+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 require __DIR__ . '/../vendor/autoload.php';
 
-// Initialize Nette Tester assertions
 Tester\Environment::setup();
 
-// Initialize the classic Configurator
 $configurator = new Nette\Bootstrap\Configurator;
-
-// Use the test cache directory we unlocked with chmod 777
+$configurator->setDebugMode(false);
 $configurator->setTempDirectory(__DIR__ . '/../temp/tests');
 
-// Load your actual configuration files
-$configurator->addConfig(__DIR__ . '/../config/common.neon');
-$configurator->addConfig(__DIR__ . '/../config/services.neon');
+// Pass an empty configuration array instead
+$configurator->addConfig([
+    'parameters' => [],
+    'services' => []
+]);
 
 return $configurator->createContainer();
