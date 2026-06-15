@@ -21,12 +21,12 @@ class UserSeeder extends AbstractSeed
         -- All accounts utilize the password: 'password'
         -- ============================================================================
         INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_active`, `created_at`) VALUES
-        (1, 'System Administrator', 'admin@admin.com', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'admin', 1, '2026-01-01 09:00:00'),
-        (2, 'Alex Operator', 'operator1@crm.com', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'operator', 1, '2026-01-02 10:00:00'),
-        (3, 'Emma Operator', 'operator2@crm.com', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'operator', 1, '2026-01-02 11:15:00'),
-        (4, 'John Doe (Acme Corp)', 'john.doe@acme.com', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'customer', 1, '2026-01-05 14:00:00'),
-        (5, 'Jane Smith (Global Tech)', 'jane.smith@globaltech.com', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'customer', 1, '2026-01-06 09:30:00'),
-        (6, 'Bob Johnson (Local Shop)', 'bob@localshop.org', '$2y$10$Eefb6p8Jm7Z3P8Cg97p1reD2C2O9u4WbY8a6C8g8h8i8j8k8l8m8n', 'customer', 0, '2026-01-10 16:45:00');
+        (1, 'System Administrator', 'admin@admin.com', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'admin', 1, '2026-01-01 09:00:00'),
+        (2, 'Alex Operator', 'operator1@crm.com', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'operator', 1, '2026-01-02 10:00:00'),
+        (3, 'Emma Operator', 'operator2@crm.com', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'operator', 1, '2026-01-02 11:15:00'),
+        (4, 'John Doe (Acme Corp)', 'john.doe@acme.com', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'customer', 1, '2026-01-05 14:00:00'),
+        (5, 'Jane Smith (Global Tech)', 'jane.smith@globaltech.com', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'customer', 1, '2026-01-06 09:30:00'),
+        (6, 'Bob Johnson (Local Shop)', 'bob@localshop.org', '$2y$12$n1i3e87UZIjVYDR60wY1gOvoGqe.1WleIiWvK44yP/YQGAjWQTUGq', 'customer', 0, '2026-01-10 16:45:00');
 
         -- ============================================================================
         -- 2. SEED CUSTOMERS PROFILES (1-to-1 Mapping via Shared User IDs)

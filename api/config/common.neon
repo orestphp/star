@@ -7,13 +7,15 @@ application:
 	errorPresenter:
 		4xx: Error:Error4xx
 		5xx: Error:Error5xx
-	mapping: App\Presentation\*\**Presenter
+	mapping:
+		*: App\Presentation\*\**Presenter
+		UI: App\UI\*\*Presenter
 
 
 database:
-	dsn: 'sqlite::memory:'
-	user:
-	password:
+   dsn: 'mysql:host=db;dbname=star;charset=utf8mb4'
+   user: 'root'
+   password: 'root'
 
 
 latte:
@@ -34,3 +36,6 @@ di:
 	export:
 		parameters: no
 		tags: no
+
+services:
+   - App\Model\UserAuthenticator

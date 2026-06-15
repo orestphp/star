@@ -42,13 +42,21 @@ $ make up
 ```
 
 - From the ***/var/www/star*** directory:
-   * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api`
-    * ``docker compose exec app vendor/bin/phinx migrate``
-    * ``docker compose exec app vendor/bin/phinx seed:run``
+  * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api`
+  * `docker compose exec app vendor/bin/phinx migrate`
+  * `docker compose exec app vendor/bin/phinx seed:run`
     
 - Admin credentials:
    * Admin: admin@admin.com password
     
+At "/var/www/star/api$"
+
+- Check Logs:
+   `cat log/exception.log | tail -n 50`
+
+- Clear Cache:
+   `sudo rm -rf temp/cache/*`
+
 - Run all tests: (visual resulting with "TEST SUITE SUMMARY")
   `sudo rm -rf temp/tests/*`
   `docker compose exec app php tests/run.php`
