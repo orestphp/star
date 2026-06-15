@@ -6,24 +6,12 @@
 
 	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
 
-	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="{$basePath}/css/style.css">
 
+	<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 	{asset? 'main.js'}
 	<style>
-		.nav-link {
-			text-decoration: none;
-			color: #6b7280;
-			font-size: 0.95rem;
-			font-weight: 500;
-			padding-bottom: 0.25rem;
-			border-bottom: 2px solid transparent;
-			transition: all 0.15s ease-in-out;
-		}
-		.nav-link.active {
-			color: #2563eb;
-			font-weight: 600;
-			border-bottom: 2px solid #2563eb;
-		}
+
 	</style>
 </head>
 
@@ -32,12 +20,17 @@
 
 <div class="dashboard-header" style="padding: 1.5rem; background: #fff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e5e7eb;">
 	<div style="display: flex; align-items: center; gap: 1.5rem;">
-		<h1 style="margin: 0; font-family: 'Inter', sans-serif;">Star Dashboard</h1>
+		<h1 style="margin: 0; font-family: 'Inter', sans-serif;">Customers</h1>
 
-		<nav id="dashboard-nav" style="display: flex; gap: 1rem;">
-			<a href="{link Customers:default}" class="nav-link">Customers</a>
-			<a href="{link Activities:default}" class="nav-link">Activities</a>
-		</nav>
+<!--		<nav id="dashboard-nav" style="display: flex; gap: 1rem;">-->
+<!--			<a href="{link Customers:default}" class="nav-link">Customers</a>-->
+<!--			<a href="{link Activities:default}" class="nav-link">Activities</a>-->
+<!--		</nav>-->
+
+		<div class="search-wrapper" id="live-search-container" style="display: none;">
+			<i class="fa-solid fa-magnifying-glass search-icon"></i>
+			<input type="text" id="customer-search" class="search-input" placeholder="Search customers by name or email...">
+		</div>
 	</div>
 
 	<a href="{link Sign:out}" class="btn-logout">
@@ -47,43 +40,8 @@
 
 {include content}
 
-<style>
-	.btn-logout {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		background-color: #ef4444;
-		color: #ffffff;
-		padding: 0.5rem 1rem;
-		border-radius: 6px;
-		text-decoration: none;
-		font-family: 'Inter', sans-serif;
-		font-size: 0.875rem;
-		font-weight: 500;
-		transition: background-color 0.15s ease-in-out;
-	}
-	.btn-logout:hover {
-		background-color: #dc2626;
-	}
-</style>
+<script src="{$basePath}/js/navigation.js"></script>
+<script src="{$basePath}/js/search.js"></script>
 
-<script>
-	$(document).ready(function() {
-		//  Active nav link
-		var currentPath = window.location.pathname.toLowerCase();
-		if (currentPath === '/' || currentPath === '/index.php') {
-			$('#dashboard-nav .nav-link').removeClass('active');
-			return;
-		}
-		$('#dashboard-nav .nav-link').each(function() {
-			var linkHref = $(this).attr('href').toLowerCase();
-			if (currentPath === linkHref || (linkHref !== '/' && currentPath.indexOf(linkHref) !== -1)) {
-				$(this).addClass('active');
-			} else {
-				$(this).removeClass('active');
-			}
-		});
-	});
-</script>
 </body>
 </html>

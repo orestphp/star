@@ -1,0 +1,58 @@
+.nav-link {
+    text-decoration: none;
+    color: #6b7280;
+    font-size: 0.95rem;
+    font-weight: 500;
+    padding-bottom: 0.25rem;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease-in-out;
+}
+.nav-link.active {
+    color: #2563eb;
+    font-weight: 600;
+    border-bottom: 2px solid #2563eb;
+}
+.search-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 1.5rem;
+}
+.search-input {
+    width: 260px;
+    padding: 0.4rem 0.75rem 0.4rem 2rem;
+    font-size: 0.875rem;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+.search-icon {
+    position: absolute;
+    left: 0.65rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #ef4444;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.15s ease-in-out;
+}
+.btn-logout:hover {
+    background-color: #dc2626;
+}

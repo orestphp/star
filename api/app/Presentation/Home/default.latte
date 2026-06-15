@@ -1,45 +1,114 @@
 {block content}
-<div class="dashboard-container" style="font-family: 'Inter', sans-serif;">
+<div class="dashboard-container" style="padding: 2rem; font-family: 'Inter', sans-serif;">
 
-	{if in_array($userRole, ['admin', 'operator'], true)}
-	<div class="activity-section" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-		<h2 style="margin-top: 0; margin-bottom: 1rem; color: #1f2937;">System Activities Log</h2>
+	<div class="filter-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+		<form method="get" action="{link this}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+			<div style="flex: 1; min-width: 250px;">
+				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Search Profile</label>
+				<input type="text" name="search" value="{$search}" placeholder="Search by name or email..." style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+			</div>
+			<div style="width: 160px;">
+				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Status</label>
+				<select name="status" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff;">
+					<option value="all" {if $status === 'all'}selected{/if}>All Profiles</option>
+					<option value="active" {if $status === 'active'}selected{/if}>Active Only</option>
+					<option value="inactive" {if $status === 'inactive'}selected{/if}>Inactive Only</option>
+				</select>
+			</div>
+			<div style="width: 180px;">
+				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Sort By</label>
+				<select name="sort" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff;">
+					<option value="created_desc" {if $sort === 'created_desc'}selected{/if}>Newest Joined</option>
+					<option value="created_asc" {if $sort === 'created_asc'}selected{/if}>Oldest Joined</option>
+					<option value="name_asc" {if $sort === 'name_asc'}selected{/if}>Name (A-Z)</option>
+					<option value="name_desc" {if $sort === 'name_desc'}selected{/if}>Name (Z-A)</option>
+				</select>
+			</div>
+			<div style="display: flex; gap: 0.5rem;">
+				<button type="submit" style="background: #2563eb; color: #fff; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Apply Filters</button>
+				<a href="{link Home:default, search => '', status => 'all', sort => 'created_desc'}" style="background: #f3f4f6; color: #4b5563; padding: 0.5rem 1.25rem; text-decoration: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500;">Reset</a>
+			</div>
+		</form>
+	</div>
 
-		{if count($activities) > 0}
-		<div class="table-responsive">
+	<div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start;">
+
+		<div class="customer-section" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+			{if count($customers) > 0}
 			<table style="width: 100%; border-collapse: collapse; text-align: left;">
 				<thead>
 				<tr style="border-bottom: 2px solid #f3f4f6; color: #6b7280; font-size: 0.875rem;">
 					<th style="padding: 0.75rem 0;">ID</th>
-					<th style="padding: 0.75rem 0;">Activity Details</th>
-					<th style="padding: 0.75rem 0;">Timestamp</th>
+					<th style="padding: 0.75rem 0;">Name</th>
+					<th style="padding: 0.75rem 0;">Email</th>
+					<th style="padding: 0.75rem 0;">Status</th>
 				</tr>
 				</thead>
 				<tbody>
-				{foreach $activities as $activity}
-				<tr style="border-bottom: 1px solid #f3f4f6; font-size: 0.925rem; color: #374151;">
-					<td style="padding: 0.75rem 0; font-weight: 600; color: #9ca3af;">#{$activity->id}</td>
-
+				{foreach $customers as $customer}
+				<tr class="customer-row {if isset($selectedCustomer) && $selectedCustomer->id === $customer->id}selected-row{/if}"
+					style="border-bottom: 1px solid #f3f4f6; font-size: 0.925rem; color: #374151; cursor: pointer; transition: background 0.1s;"
+					data-href="{link loadActivities!, customerId => $customer->id}">
+					<td style="padding: 0.75rem 0; font-weight: 600; color: #9ca3af;">#{$customer->id}</td>
+					<td style="padding: 0.75rem 0; font-weight: 500;">{$customer->name}</td>
+					<td style="padding: 0.75rem 0; color: #4b5563;">{$customer->email}</td>
 					<td style="padding: 0.75rem 0;">
-						{var $detail = $activity->action ?? $activity->details ?? ''}
-						{$detail|escape}
+						{if (int)$customer->is_active === 1}
+						<span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Active</span>
+						{else}
+						<span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Inactive</span>
+						{/if}
 					</td>
-
-					<td style="padding: 0.75rem 0; color: #6b7280;">{$activity->created_at|date:'Y-m-d H:i:s'}</td>
 				</tr>
 				{/foreach}
 				</tbody>
 			</table>
+			{else}
+			<p style="color: #6b7280; font-style: italic; text-align: center; padding: 2rem;">No customer profiles match criteria.</p>
+			{/if}
 		</div>
-		{else}
-		<p style="color: #6b7280; font-style: italic;">No activities found in the log table.</p>
-		{/if}
-	</div>
-	{else}
-	<div class="welcome-box" style="background: #f3f4f6; padding: 2rem; border-radius: 8px; text-align: center; color: #4b5563;">
-		<h3>Welcome back!</h3>
-		<p>Your client workspace dashboard is active.</p>
-	</div>
-	{/if}
 
+		<div id="activity-history-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-height: 300px;">
+			{snippet activitiesSnippet}
+			{if isset($selectedCustomer) && $selectedCustomer}
+			<h3 style="margin-top: 0; margin-bottom: 0.25rem; color: #1f2937;">Activity History</h3>
+			<p style="margin-top: 0; margin-bottom: 1.5rem; font-size: 0.875rem; color: #6b7280;">Showing logs for <strong>{$selectedCustomer->name}</strong></p>
+
+			{if count($activities) > 0}
+			<div style="max-height: 500px; overflow-y: auto; padding-right: 0.25rem;">
+				{foreach $activities as $activity}
+				<div style="padding: 1rem 0; border-bottom: 1px dashed #e5e7eb;">
+					<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+                                        <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 4px; text-transform: uppercase;">
+                                            {var $type = $activity->type ?? $activity->action_type ?? 'Activity'}
+                                            {$type}
+                                        </span>
+						<small style="color: #9ca3af; font-size: 0.75rem;">{$activity->created_at|date:'Y-m-d H:i:s'}</small>
+					</div>
+					<p style="margin: 0; font-size: 0.875rem; color: #374151; line-height: 1.4; word-break: break-word;">
+						{var $detail = $activity->detail ?? $activity->description ?? $activity->action ?? ''}
+						{$detail}
+					</p>
+				</div>
+				{/foreach}
+			</div>
+			<p style="margin-top: 1rem; margin-bottom: 0; font-size: 0.75rem; color: #9ca3af; text-align: right; font-style: italic;">* Max 50 recent records shown</p>
+			{else}
+			<p style="color: #9ca3af; font-style: italic; font-size: 0.875rem; text-align: center; padding-top: 3rem;">This customer has zero documented historical activities.</p>
+			{/if}
+			{else}
+			<div style="text-align: center; color: #9ca3af; padding-top: 6rem;">
+				<p style="margin: 0; font-size: 0.9rem;">Select a customer row on the left to review their activity timeline history.</p>
+			</div>
+			{/if}
+			{/snippet}
+		</div>
+
+	</div>
 </div>
+
+<style>
+	.customer-row:hover { background-color: #f9fafb; }
+	.selected-row { background-color: #eff6ff !important; border-left: 4px solid #2563eb; }
+</style>
+{/block}
