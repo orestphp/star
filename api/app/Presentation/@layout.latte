@@ -12,30 +12,6 @@
 <body>
 	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
 
-	<a href="{link Sign:out}" class="btn-logout">
-		<i class="fa-solid fa-right-from-bracket"></i> Sign Out
-	</a>
-
 	{include content}
 </body>
 </html>
-
-<style>
-	.btn-logout {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		background-color: #ef4444;
-		color: #ffffff;
-		padding: 0.5rem 1rem;
-		border-radius: 6px;
-		text-decoration: none;
-		font-family: 'Inter', sans-serif;
-		font-size: 0.875rem;
-		font-weight: 500;
-		transition: background-color 0.15s ease-in-out;
-	}
-	.btn-logout:hover {
-		background-color: #dc2626;
-	}
-</style>
