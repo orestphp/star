@@ -1,14 +1,14 @@
 <?php
-// [app/Presentation/Home/HomePresenter.php]
+// [app/Presentation/Activities/ActivitiesPresenter.php]
 
 declare(strict_types=1);
 
-namespace App\Presentation\Home;
+namespace App\Presentation\Activities;
 
 use Nette;
 use Nette\Database\Explorer;
 
-final class HomePresenter extends Nette\Application\UI\Presenter
+final class ActivitiesPresenter extends Nette\Application\UI\Presenter
 {
     public function __construct(
         private Explorer $database

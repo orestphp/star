@@ -48,6 +48,7 @@ $ make up
     
 - Admin credentials:
    * Admin: admin@admin.com password
+   * Operator/Customer: email-vary@email-vary.com password (email-vary look in db)
     
 At "/var/www/star/api$"
 
