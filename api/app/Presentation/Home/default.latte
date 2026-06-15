@@ -1,32 +1,40 @@
 {block content}
 <div class="dashboard-container" style="padding: 2rem; font-family: 'Inter', sans-serif;">
 
-	<div class="filter-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+	<div class="filter-panel" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
 		<form method="get" action="{link this}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+
 			<div style="flex: 1; min-width: 250px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Search Profile</label>
-				<input type="text" name="search" value="{$search}" placeholder="Search by name or email..." style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem;">
+				<input type="text" name="search" value="{$search}" placeholder="Search by name or email..." style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box;">
 			</div>
+
 			<div style="width: 160px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Status</label>
-				<select name="status" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff;">
+				<select name="status" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff; box-sizing: border-box;">
 					<option value="all" {if $status === 'all'}selected{/if}>All Profiles</option>
 					<option value="active" {if $status === 'active'}selected{/if}>Active Only</option>
 					<option value="inactive" {if $status === 'inactive'}selected{/if}>Inactive Only</option>
 				</select>
 			</div>
+
 			<div style="width: 180px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Sort By</label>
-				<select name="sort" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff;">
+				<select name="sort" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff; box-sizing: border-box;">
 					<option value="created_desc" {if $sort === 'created_desc'}selected{/if}>Newest Joined</option>
 					<option value="created_asc" {if $sort === 'created_asc'}selected{/if}>Oldest Joined</option>
 					<option value="name_asc" {if $sort === 'name_asc'}selected{/if}>Name (A-Z)</option>
 					<option value="name_desc" {if $sort === 'name_desc'}selected{/if}>Name (Z-A)</option>
 				</select>
 			</div>
+
 			<div style="display: flex; gap: 0.5rem;">
-				<button type="submit" style="background: #2563eb; color: #fff; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Apply Filters</button>
-				<a href="{link Home:default, search => '', status => 'all', sort => 'created_desc'}" style="background: #f3f4f6; color: #4b5563; padding: 0.5rem 1.25rem; text-decoration: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500;">Reset</a>
+				<button type="submit" style="background: #2563eb; color: #fff; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
+					Apply Filters
+				</button>
+				<a href="{link Home:default, search => '', status => 'all', sort => 'created_desc'}" style="background: #f3f4f6; color: #4b5563; padding: 0.5rem 1.25rem; text-decoration: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; line-height: 1.25rem;">
+					Reset
+				</a>
 			</div>
 		</form>
 	</div>
@@ -68,26 +76,45 @@
 			{/if}
 		</div>
 
-		<div id="activity-history-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-height: 300px;">
+		<div id="activity-history-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-height: 400px;">
 			{snippet activitiesSnippet}
 			{if isset($selectedCustomer) && $selectedCustomer}
-			<h3 style="margin-top: 0; margin-bottom: 0.25rem; color: #1f2937;">Activity History</h3>
-			<p style="margin-top: 0; margin-bottom: 1.5rem; font-size: 0.875rem; color: #6b7280;">Showing logs for <strong>{$selectedCustomer->name}</strong></p>
+			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 2px solid #f3f4f6; padding-bottom: 0.75rem;">
+				<div>
+					<h3 style="margin: 0; color: #1f2937; font-size: 1.25rem;">Activity History</h3>
+					<p style="margin: 0; font-size: 0.875rem; color: #6b7280;">Logs for <strong>{$selectedCustomer->name}</strong></p>
+				</div>
+
+				<button type="button" class="btn-comment-trigger"
+						style="background: #10b981; color: #fff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;"
+						onclick="openCommentModal({$selectedCustomer->id}, {$selectedCustomer->name|escapeJs})">
+					<i class="fa-solid fa-comment-dots"></i> Add Comment
+				</button>
+			</div>
 
 			{if count($activities) > 0}
 			<div style="max-height: 500px; overflow-y: auto; padding-right: 0.25rem;">
 				{foreach $activities as $activity}
-				<div style="padding: 1rem 0; border-bottom: 1px dashed #e5e7eb;">
-					<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.35rem;">
+				{var $type = $activity->type ?? $activity->action_type ?? $activity->action ?? 'LOG'}
+				{var $detail = $activity->detail ?? $activity->description ?? $activity->details ?? $activity->message ?? $activity->comment ?? ''}
+				{var $rawDate = $activity->created_at}
+
+				<div class="interactive-activity-item"
+					 style="padding: 1rem; border-bottom: 1px dashed #e5e7eb; cursor: pointer; transition: background 0.15s; border-radius: 6px; margin-bottom: 0.25rem;"
+					 data-id="{$activity->id ?? $activity->id_activity ?? $activity->activity_id}"
+					 data-type="{$type}"
+					 data-time="{$rawDate|date:'Y-m-d H:i:s'}"
+					 data-detail="{$detail|escapeHtml}">
+
+					<div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
                                         <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.4rem; border-radius: 4px; text-transform: uppercase;">
-                                            {var $type = $activity->type ?? $activity->action_type ?? 'Activity'}
                                             {$type}
                                         </span>
-						<small style="color: #9ca3af; font-size: 0.75rem;">{$activity->created_at|date:'Y-m-d H:i:s'}</small>
+						<small style="color: #9ca3af; font-size: 0.75rem;">{$rawDate|date:'Y-m-d H:i:s'}</small>
 					</div>
-					<p style="margin: 0; font-size: 0.875rem; color: #374151; line-height: 1.4; word-break: break-word;">
-						{var $detail = $activity->detail ?? $activity->description ?? $activity->action ?? ''}
-						{$detail}
+
+					<p style="margin: 0; font-size: 0.875rem; color: #374151; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+						{if !empty($detail)}{$detail}{else}<span style="color: #9ca3af; font-style: italic;">No details logged.</span>{/if}
 					</p>
 				</div>
 				{/foreach}
@@ -107,8 +134,68 @@
 	</div>
 </div>
 
+<div id="activityDetailsModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; box-sizing: border-box;">
+	<div style="background: #ffffff; border: 1px solid #e5e7eb; padding: 1.75rem; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15); position: relative; box-sizing: border-box;">
+
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.75rem;">
+			<span id="inspectType" style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 4px; text-transform: uppercase;"></span>
+			<small id="inspectTime" style="color: #6b7280; font-size: 0.8rem; font-weight: 500;"></small>
+		</div>
+
+		<form id="updateActivityForm">
+			<input type="hidden" id="inspectActivityId" name="activityId">
+
+			<div style="margin-bottom: 1.5rem;">
+				<label style="display: block; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Log Context Details</label>
+
+				<textarea id="inspectDetail" name="detail" rows="5" required
+						  style="width: 100%; font-size: 0.925rem; color: #1f2937; line-height: 1.5; padding: 0.75rem; background: #f9fafb; border-radius: 6px; border: 1px solid #e5e7eb; word-break: break-word; resize: vertical; box-sizing: border-box; font-family: inherit;"></textarea>
+			</div>
+
+			<div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+				<button type="button" onclick="closeActivityModal()" style="background: #f3f4f6; color: #4b5563; border: none; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Cancel</button>
+				<button type="submit" style="background: #2563eb; color: #ffffff; border: none; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer;">Update Comment</button>
+			</div>
+		</form>
+	</div>
+</div>
+<div id="commentModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; box-sizing: border-box;">
+	<div style="background: #ffffff !important; border: 1px solid #e5e7eb; padding: 1.75rem; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15); position: relative; box-sizing: border-box; display: block;">
+
+		<h4 style="margin-top: 0; margin-bottom: 0.25rem; color: #1f2937; font-size: 1.15rem; font-weight: 700;">Add Operator Comment</h4>
+		<p id="modalCustomerName" style="margin-top: 0; margin-bottom: 1.25rem; font-size: 0.85rem; color: #6b7280; font-weight: 500;"></p>
+
+		<form id="commentForm">
+			<input type="hidden" id="modalCustomerId" name="customerId">
+
+			<div style="margin-bottom: 1rem;">
+				<label style="display: block; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Log Classification Type</label>
+
+				<select name="type" id="commentTypeSelector"
+						style="display: block !important; visibility: visible !important; opacity: 1 !important; width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background-color: #ffffff !important; color: #1f2937 !important; box-sizing: border-box; font-family: inherit; height: 38px; -webkit-appearance: select !important; -moz-appearance: select !important; appearance: select !important;">
+					<option value="COMMENT">Comment / internal Note</option>
+					<option value="CALL">Outbound Phone Call Log</option>
+					<option value="EMAIL">Direct Email Update</option>
+					<option value="SYSTEM">Manual Status Overwrite</option>
+				</select>
+			</div>
+
+			<div style="margin-bottom: 1.25rem;">
+				<label style="display: block; font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Comment Text</label>
+				<textarea id="commentText" name="comment" rows="4" required placeholder="Type customer update notes here..."
+						  style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; box-sizing: border-box; resize: vertical; font-family: inherit; color: #1f2937; background: #f9fafb;"></textarea>
+			</div>
+
+			<div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+				<button type="button" onclick="closeCommentModal()" style="background: #f3f4f6; color: #4b5563; border: none; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">Cancel</button>
+				<button type="submit" style="background: #10b981; color: #ffffff; border: none; padding: 0.55rem 1.25rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">Save Note</button>
+			</div>
+		</form>
+	</div>
+</div>
+
 <style>
-	.customer-row:hover { background-color: #f9fafb; }
-	.selected-row { background-color: #eff6ff !important; border-left: 4px solid #2563eb; }
+	.interactive-activity-item:hover { background-color: #f3f4f6; }
+	.selected-row { background-color: #eff6ff; border-left: 4px solid #2563eb !important; }
 </style>
 {/block}

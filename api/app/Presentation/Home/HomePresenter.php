@@ -85,6 +85,131 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
+    /**
+     * ⚡ AJAX Signal Handler: Adds a new operator comment note safely
+     */
+    public function handleAddComment(int $customerId, string $comment): void
+    {
+        // 1. Fetch a dummy or existing row from activities to check column keys safely
+        $existingRow = $this->database->table('activities')->limit(1)->fetch();
+
+        // Fallback default array if the table is completely empty
+        $rowKeys = $existingRow
+            ? array_keys($existingRow->toArray())
+            : ['customer_id', 'detail', 'type', 'created_at'];
+
+        // 2. Map out the correct foreign key field
+        $foreignKey = 'customer_id';
+        foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
+            if (in_array($col, $rowKeys, true)) { $foreignKey = $col; break; }
+        }
+
+        // 3. Map out the correct comment/detail text field
+        $textField = 'detail';
+        foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
+            if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
+        }
+
+        // 4. Build our data entry matrix array
+        $insertData = [
+            $foreignKey => $customerId,
+            $textField  => trim($comment),
+            'created_at' => new \DateTime(), // or use NOW() database side
+        ];
+
+        // 5. Match and insert a type column if it exists in your schema
+        foreach (['type', 'action_type', 'action'] as $col) {
+            if (in_array($col, $rowKeys, true)) {
+                $insertData[$col] = 'COMMENT'; // Explicit classification tag
+                break;
+            }
+        }
+
+        // 6. Execute safe insert statement
+        $this->database->table('activities')->insert($insertData);
+
+        // 7. Retain structural presentation variables for snippet redraw
+        $this->selectedCustomerId = $customerId;
+
+        if (method_exists($this, 'loadCustomerActivities')) {
+            $this->loadCustomerActivities($customerId);
+        } else {
+            $this->template->selectedCustomer = $this->database->table('customers')->get($customerId);
+            $this->template->activities = $this->database->table('activities')
+                ->where($foreignKey, $customerId)
+                ->order('created_at DESC')
+                ->limit(50);
+        }
+
+        // Redraw snippet for seamless dynamic UI tracking updates
+        if ($this->isAjax()) {
+            $this->redrawControl('activitiesSnippet');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
+    /**
+     * ⚡ AJAX Signal Handler: Modifies an existing operator note/activity detail safely
+     */
+    public function handleUpdateComment(int $activityId, string $detail): void
+    {
+        // 1. Fetch the specific activity row record
+        $activityRow = $this->database->table('activities')->get($activityId);
+        if (!$activityRow) {
+            return;
+        }
+
+        // 2. Safely find the text field column by inspecting the ActiveRow keys directly
+        $rowKeys = array_keys($activityRow->toArray());
+        $textField = 'detail'; // Fallback default
+
+        foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
+            if (in_array($col, $rowKeys, true)) {
+                $textField = $col;
+                break;
+            }
+        }
+
+        // 3. Apply the updated detail text payload string
+        $activityRow->update([
+            $textField => trim($detail)
+        ]);
+
+        // 4. Safely find the foreign key column back to the customer profile
+        $foreignKey = 'customer_id'; // Fallback default
+        foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
+            if (in_array($col, $rowKeys, true)) {
+                $foreignKey = $col;
+                break;
+            }
+        }
+
+        $customerId = $activityRow->{$foreignKey};
+
+        // 5. Reload the timeline payload variables for the snippet redraw
+        $this->selectedCustomerId = $customerId;
+
+        // Match whichever internal data loading method your presenter uses (e.g., template assignments)
+        if (method_exists($this, 'loadCustomerActivities')) {
+            $this->loadCustomerActivities($customerId);
+        } else {
+            // Manual fallback if you load variables inline
+            $this->template->selectedCustomer = $this->database->table('customers')->get($customerId);
+            $this->template->activities = $this->database->table('activities')
+                ->where($foreignKey, $customerId)
+                ->order('created_at DESC')
+                ->limit(50);
+        }
+
+        // 6. Handle the AJAX snippet redraw response cycle cleanly
+        if ($this->isAjax()) {
+            $this->redrawControl('activitiesSnippet');
+        } else {
+            $this->redirect('this');
+        }
+    }
+
     private function loadCustomerActivities(int $customerId): void
     {
         $customer = $this->database->table('users')->get($customerId);
@@ -94,7 +219,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
 
         $this->template->selectedCustomer = $customer;
 
-        // 💡 Try standard variations via graceful fallbacks to find your schema column
+        // Try standard variations via graceful fallbacks to find your schema column
         $columnFallbacks = ['customer_id', 'id_user', 'id_customer', 'user_id'];
 
         foreach ($columnFallbacks as $column) {
