@@ -36,7 +36,7 @@
 <div class="login-container" data-redirect-url="{link Home:default}">
     <div class="login-header">
         <h2>Welcome Back</h2>
-        <p>Sign in to your administration dashboard</p>
+        <p>Sign in to Customer dashboard</p>
     </div>
 
     <div id="alert-error" class="alert alert-danger"></div>
@@ -93,7 +93,7 @@
                 url: $form.attr('action'),
                 type: 'POST',
                 dataType: 'json',
-                // 🔑 Append '&send=1' so Nette processes the matching Form submit button event hook
+                // Append '&send=1' so Nette processes the matching Form submit button event hook
                 data: $form.serialize() + '&send=1',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest' // Standard flag for Nette's $this->isAjax() identification

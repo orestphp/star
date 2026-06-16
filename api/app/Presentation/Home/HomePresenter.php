@@ -17,7 +17,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     /** @persistent */
     public string $sort = 'created_desc';
 
-    // 💡 FIX: Explicitly declaring the property avoids the MemberAccessException
+    /** @persistent */
     public ?int $selectedCustomerId = null;
 
     public function __construct(
@@ -68,10 +68,14 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             $this->template->activities = [];
             $this->template->selectedCustomer = null;
         }
+
+        $this->template->csrfToken = $this->getHttpRequest()->getCookie('nette-samesite')
+            ? md5($this->getSession()->getId())
+            : $this->getSession()->getSection('Security')->token ??= Nette\Utils\Random::generate();
     }
 
     /**
-     * ⚡ AJAX Signal Handler
+     * ⚡ AJAX Signal Handler: Customer Row Click Action
      */
     public function handleLoadActivities(int $customerId): void
     {
@@ -86,11 +90,21 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * ⚡ AJAX Signal Handler: Now accepts the explicit type parameter from the query string!
+     * ⚡ AJAX Signal Handler: Creates standalone parent activity logs
      */
     public function handleAddComment(int $customerId, string $comment, string $type = 'COMMENT'): void
     {
-        // 1. Fetch a row to safely inspect column layout schemas
+        // 1. Verify the custom CSRF parameter coming from JavaScript
+        $passedToken = $this->getParameter('_sec');
+        $expectedToken = $this->getSession()->getSection('Security')->token ?? md5($this->getSession()->getId());
+
+        if (!$passedToken || $passedToken !== $expectedToken) {
+            $this->getHttpResponse()->setCode(Nette\Http\IResponse::S403_FORBIDDEN);
+            $this->sendJson(['error' => 'Security token invalid or expired.']);
+            return;
+        }
+
+        // 2. Safely extract table layout schema columns using dynamic inspection loops
         $existingRow = $this->database->table('activities')->limit(1)->fetch();
         $rowKeys = $existingRow ? array_keys($existingRow->toArray()) : ['customer_id', 'detail', 'type', 'created_at'];
 
@@ -104,36 +118,26 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
         }
 
-        // Prepare insertion payload array
+        // 3. Construct clean insertion payload arrays
         $insertData = [
             $foreignKey  => $customerId,
             $textField   => trim($comment),
             'created_at' => new \DateTime(),
         ];
 
-        // 2. Bind the incoming $type safely into your active database schema column
         foreach (['type', 'action_type', 'action'] as $col) {
             if (in_array($col, $rowKeys, true)) {
-                $insertData[$col] = strtoupper(trim($type)); // Saves 'CALL', 'EMAIL', 'MEETING', etc.
+                $insertData[$col] = strtoupper(trim($type));
                 break;
             }
         }
 
-        // 3. Execute safe database record assignment
+        // Execute save record routine down to database persistence engines
         $this->database->table('activities')->insert($insertData);
 
-        // 4. Reload your presentation views for snippet updates
+        // 4. Reset our persistent state pointer context and reload template data sets cleanly
         $this->selectedCustomerId = $customerId;
-
-        if (method_exists($this, 'loadCustomerActivities')) {
-            $this->loadCustomerActivities($customerId);
-        } else {
-            $this->template->selectedCustomer = $this->database->table('customers')->get($customerId);
-            $this->template->activities = $this->database->table('activities')
-                ->where($foreignKey, $customerId)
-                ->order('created_at DESC')
-                ->limit(50);
-        }
+        $this->loadCustomerActivities($customerId);
 
         if ($this->isAjax()) {
             $this->redrawControl('activitiesSnippet');
@@ -143,66 +147,64 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * ⚡ AJAX Signal Handler: Modifies an existing operator note/activity detail safely
+     * ⚡ AJAX Endpoint: Pulls a structured JSON collection of child comment tracking threads
      */
-    public function handleUpdateComment(int $activityId, string $detail): void
+    public function handleGetComments(int $activityId): void
     {
-        // 1. Fetch the specific activity row record
-        $activityRow = $this->database->table('activities')->get($activityId);
-        if (!$activityRow) {
+        $rows = $this->database->table('comments')
+            ->where('activity_id = ?', $activityId)
+            ->order('created_at ASC')
+            ->fetchAll();
+
+        $commentsPayload = [];
+        foreach ($rows as $row) {
+            $commentsPayload[] = [
+                'id'          => $row->id,
+                'user_id'     => $row->user_id ?? 1,
+                'text'        => $row->text,
+                'created_at'  => $row->created_at->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        $this->sendJson(['comments' => $commentsPayload]);
+    }
+
+    /**
+     * ⚡ AJAX Endpoint: Appends an ongoing thread sub-comment record entry securely
+     */
+    public function handleAddActivityComment(): void
+    {
+        $passedToken = $this->getParameter('_sec');
+        $expectedToken = $this->getSession()->getSection('Security')->token ?? md5($this->getSession()->getId());
+
+        if (!$passedToken || $passedToken !== $expectedToken) {
+            $this->getHttpResponse()->setCode(Nette\Http\IResponse::S403_FORBIDDEN);
+            $this->sendJson(['success' => false, 'error' => 'Security token invalid or expired.']);
             return;
         }
 
-        // 2. Safely find the text field column by inspecting the ActiveRow keys directly
-        $rowKeys = array_keys($activityRow->toArray());
-        $textField = 'detail'; // Fallback default
+        $activityId = (int) $this->getParameter('activityId');
+        $text = $this->getParameter('text');
 
-        foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
-            if (in_array($col, $rowKeys, true)) {
-                $textField = $col;
-                break;
-            }
+        if (empty(trim($text))) {
+            $this->sendJson(['success' => false, 'error' => 'Comment body context block cannot be blank.']);
+            return;
         }
 
-        // 3. Apply the updated detail text payload string
-        $activityRow->update([
-            $textField => trim($detail)
+        $this->database->table('comments')->insert([
+            'activity_id' => $activityId,
+            'user_id'     => $this->getUser()->getId() ?? 1,
+            'text'        => trim($text),
+            'created_at'  => new \DateTime(),
+            'updated_at'  => new \DateTime()
         ]);
 
-        // 4. Safely find the foreign key column back to the customer profile
-        $foreignKey = 'customer_id'; // Fallback default
-        foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
-            if (in_array($col, $rowKeys, true)) {
-                $foreignKey = $col;
-                break;
-            }
-        }
-
-        $customerId = $activityRow->{$foreignKey};
-
-        // 5. Reload the timeline payload variables for the snippet redraw
-        $this->selectedCustomerId = $customerId;
-
-        // Match whichever internal data loading method your presenter uses (e.g., template assignments)
-        if (method_exists($this, 'loadCustomerActivities')) {
-            $this->loadCustomerActivities($customerId);
-        } else {
-            // Manual fallback if you load variables inline
-            $this->template->selectedCustomer = $this->database->table('customers')->get($customerId);
-            $this->template->activities = $this->database->table('activities')
-                ->where($foreignKey, $customerId)
-                ->order('created_at DESC')
-                ->limit(50);
-        }
-
-        // 6. Handle the AJAX snippet redraw response cycle cleanly
-        if ($this->isAjax()) {
-            $this->redrawControl('activitiesSnippet');
-        } else {
-            $this->redirect('this');
-        }
+        $this->sendJson(['success' => true]);
     }
 
+    /**
+     * 🔒 Internal Helper: Populates timeline parameters safe from DriverExceptions
+     */
     private function loadCustomerActivities(int $customerId): void
     {
         $customer = $this->database->table('users')->get($customerId);
@@ -211,23 +213,18 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
 
         $this->template->selectedCustomer = $customer;
-
-        // Try standard variations via graceful fallbacks to find your schema column
         $columnFallbacks = ['customer_id', 'id_user', 'id_customer', 'user_id'];
 
         foreach ($columnFallbacks as $column) {
             try {
-                // Duplicate the selection initialization per pass to keep fresh state
                 $this->template->activities = $this->database->table('activities')
                     ->where("$column = ?", $customerId)
                     ->order('created_at DESC')
                     ->limit(50)
                     ->fetchAll();
 
-                // If it succeeds without throwing a DriverException, break out early!
                 break;
             } catch (\Nette\Database\DriverException $e) {
-                // If we ran through all fallbacks and it still fails, rethrow the error
                 if ($column === end($columnFallbacks)) {
                     throw $e;
                 }

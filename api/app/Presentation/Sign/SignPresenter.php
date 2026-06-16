@@ -33,6 +33,7 @@ final class SignPresenter extends Nette\Application\UI\Presenter
     {
         $form = new Form;
 
+        $form->addProtection('Security token expired, please refresh and sign in again.');
         $form->addEmail('username')->setRequired();
         $form->addPassword('password')->setRequired();
         $form->addSubmit('send');
