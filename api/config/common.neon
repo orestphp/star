@@ -4,38 +4,43 @@ parameters:
 
 
 application:
-	errorPresenter:
-		4xx: Error:Error4xx
-		5xx: Error:Error5xx
-	mapping:
-		*: App\Presentation\*\**Presenter
-		UI: App\UI\*\*Presenter
+    errorPresenter:
+        4xx: Error:Error4xx
+        5xx: Error:Error5xx
+    mapping:
+        *: App\Presentation\*\**Presenter
+        UI: App\UI\*\*Presenter
 
 
 database:
-   dsn: 'mysql:host=db;dbname=star;charset=utf8mb4'
-   user: 'root'
-   password: 'root'
+    dsn: 'mysql:host=db;dbname=star;charset=utf8mb4'
+    user: 'root'
+    password: 'root'
 
 
 latte:
-	strictTypes: yes
-	strictParsing: yes
-	extensions:
-		- App\Presentation\Accessory\LatteExtension
+    strictTypes: yes
+    strictParsing: yes
+    extensions:
+        - App\Presentation\Accessory\LatteExtension
 
 
 assets:
-	mapping:
-		default:
-			path: assets
-			# type: vite  # Uncomment to activate Vite for asset building
+    mapping:
+        default:
+            path: assets
 
 
 di:
-	export:
-		parameters: no
-		tags: no
+    export:
+        parameters: no
+        tags: no
 
 services:
-   - App\Model\UserAuthenticator
+    - App\Model\UserAuthenticator
+    - App\Middleware\CsrfMiddlewareListener
+
+    # Bind listener to the Nette Application's onPresenter array event:
+    application.application:
+        setup:
+            - '$onPresenter[]' = [@App\Middleware\CsrfMiddlewareListener, '__invoke']

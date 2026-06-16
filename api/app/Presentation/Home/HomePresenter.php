@@ -75,9 +75,9 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             $this->template->selectedCustomer = null;
         }
 
-        $this->template->csrfToken = $this->getHttpRequest()->getCookie('nette-samesite')
-            ? md5($this->getSession()->getId())
-            : $this->getSession()->getSection('Security')->token ??= Nette\Utils\Random::generate();
+        //pass token
+        $section = $this->getSession()->getSection('Nette.Forms.Form');
+        $this->template->csrfToken = $section->token ??= Nette\Utils\Random::generate();
     }
 
     /**
@@ -96,21 +96,11 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * ⚡ AJAX Signal Handler: Creates standalone parent activity logs
+     * ⚡ AJAX Signal Handler: Create activity
      */
-    public function handleAddComment(int $customerId, string $comment, string $type = 'COMMENT'): void
+    public function handleAddActivity(int $customerId, string $comment, string $type = 'COMMENT'): void
     {
-        // 1. Verify the custom CSRF parameter coming from JavaScript
-        $passedToken = $this->getParameter('_sec');
-        $expectedToken = $this->getSession()->getSection('Security')->token ?? md5($this->getSession()->getId());
-
-        if (!$passedToken || $passedToken !== $expectedToken) {
-            $this->getHttpResponse()->setCode(Nette\Http\IResponse::S403_FORBIDDEN);
-            $this->sendJson(['error' => 'Security token invalid or expired.']);
-            return;
-        }
-
-        // 2. Safely extract table layout schema columns using dynamic inspection loops
+        // Safely extract table layout schema columns using dynamic inspection loops
         $existingRow = $this->database->table('activities')->limit(1)->fetch();
         $rowKeys = $existingRow ? array_keys($existingRow->toArray()) : ['customer_id', 'detail', 'type', 'created_at'];
 
@@ -124,7 +114,6 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
         }
 
-        // 3. Construct clean insertion payload arrays
         $insertData = [
             $foreignKey  => $customerId,
             $textField   => trim($comment),
@@ -138,10 +127,8 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             }
         }
 
-        // Execute save record routine down to database persistence engines
         $this->database->table('activities')->insert($insertData);
 
-        // 4. Reset our persistent state pointer context and reload template data sets cleanly
         $this->selectedCustomerId = $customerId;
         $this->loadCustomerActivities($customerId);
 
@@ -153,7 +140,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * ⚡ AJAX Endpoint: Pulls a structured JSON collection of child comment tracking threads
+     * ⚡ AJAX Endpoint: Get Comments
      */
     public function handleGetComments(int $activityId): void
     {
@@ -180,15 +167,6 @@ final class HomePresenter extends Nette\Application\UI\Presenter
      */
     public function handleAddActivityComment(): void
     {
-        $passedToken = $this->getParameter('_sec');
-        $expectedToken = $this->getSession()->getSection('Security')->token ?? md5($this->getSession()->getId());
-
-        if (!$passedToken || $passedToken !== $expectedToken) {
-            $this->getHttpResponse()->setCode(Nette\Http\IResponse::S403_FORBIDDEN);
-            $this->sendJson(['success' => false, 'error' => 'Security token invalid or expired.']);
-            return;
-        }
-
         $activityId = (int) $this->getParameter('activityId');
         $text = $this->getParameter('text');
 

@@ -8,7 +8,7 @@
 function openActivityModal(customerId, customerName) {
     $('#modalCustomerId').val(customerId);
     $('#modalCustomerName').html('<strong>' + escapeHtml(customerName) + '</strong>');
-    $('#commentText').val(''); // Clear old inputs
+    $('#activityText').val(''); // Clear old inputs
     $('#activityModal').css('display', 'flex');
 }
 
@@ -35,32 +35,34 @@ function escapeHtml(str) {
 }
 
 // ==========================================
-// 2. Core Interactive State Management
+// 2. Forms & Listing
 // ==========================================
 $(document).ready(function() {
 
-    // A. Customer Level Base Logging Form (Main Panel Action)
-    $('#commentForm').on('submit', function(e) {
+    // Activity Form
+// Activity Form Submission Handler
+    $('#activityForm').on('submit', function(e) {
         e.preventDefault();
 
         var customerId   = $('#modalCustomerId').val();
-        var commentStr   = $('#commentText').val();
-        var selectedType = $('#commentTypeSelector').val() || 'COMMENT';
-        var token        = $('#commentForm').attr('data-token') || $('#commentForm').data('token');
-
-        var submissionUrl = '?do=addComment' +
-            '&customerId=' + customerId +
-            '&comment=' + encodeURIComponent(commentStr) +
-            '&type=' + encodeURIComponent(selectedType) +
-            '&_sec=' + encodeURIComponent(token);
+        var activityStr  = $('#activityText').val();
+        var selectedType = $('#activityTypeSelector').val() || 'COMMENT';
+        var token        = $('#activityForm').attr('data-token') || $('#activityForm').data('token');
 
         $.ajax({
-            url: submissionUrl,
-            type: 'GET',
+            url: '?do=addActivity',
+            type: 'POST',
             dataType: 'json',
+            data: {
+                customerId: customerId,
+                comment: activityStr,
+                type: selectedType,
+                _sec: token
+            },
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             success: function(payload) {
                 closeActivityModal();
+
                 // Process clean framework snippet redraw update iterations
                 if (payload && payload.snippets) {
                     for (var id in payload.snippets) {
@@ -79,7 +81,7 @@ $(document).ready(function() {
         });
     });
 
-    // B. Consolidated Single Click Handler for Activity Rows (Launches Split Screen Thread View)
+    // List Activities
     $(document).on('click', '.interactive-activity-item', function(e) {
         e.stopPropagation();
 
@@ -96,7 +98,7 @@ $(document).ready(function() {
         $('#inspectDetailDisplay').html(detail);
 
         // Flash progress loading placeholder rows ahead of async fetch parsing sequences
-        $('#modalCommentsFeed').html('<p style="color: #9ca3af; font-size: 0.85rem; font-style: italic; text-align: center; margin: auto; padding: 1rem;">Loading conversation entries...</p>');
+        $('#modalCommentsFeed').html('<p style="color: #9ca3af; font-size: 0.85rem; font-style: italic; text-align: center; margin: auto; padding: 1rem;">Loading activities ...</p>');
 
         // show the modal overlay
         openActivityCommentsModal();
@@ -105,7 +107,7 @@ $(document).ready(function() {
         fetchCommentsForActivity(activityId);
     });
 
-    // C. Internal Sub-thread Message Payload Lookup Fetch Loop
+    // List Activity-comments
     function fetchCommentsForActivity(activityId) {
         $.ajax({
             url: '?do=getComments',
@@ -139,7 +141,7 @@ $(document).ready(function() {
         });
     }
 
-    // D. Sub-thread Inline Text Creation Form Submission Processing Logic
+    // Comment Form
     $('#addActivityCommentForm').on('submit', function(e) {
         e.preventDefault();
 
@@ -147,7 +149,7 @@ $(document).ready(function() {
         var txt        = $('#newSubCommentText').val();
 
         // Safe extraction approach to guarantee security token delivery survival lines
-        var token      = $('#commentForm').attr('data-token') || $('#commentForm').data('token');
+        var token      = $('#activityForm').attr('data-token') || $('#activityForm').data('token');
 
         if (!txt.trim()) return;
 
