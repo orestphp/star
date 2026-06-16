@@ -8,6 +8,12 @@ namespace App\Presentation\Home;
 use Nette;
 use Nette\Database\Explorer;
 
+/**
+ * This class represent "Customer", "Activities" and "Activity Comments" business logic
+ *
+ * Class HomePresenter
+ * @package App\Presentation\Home
+ */
 final class HomePresenter extends Nette\Application\UI\Presenter
 {
     /** @persistent */

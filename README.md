@@ -98,3 +98,4 @@ http://127.0.0.1:8081/
     - Paginate Activity list: * Max 50 recent records shown
     - Move CSS from "Home/default.latte" to "customer.css"
     - Move JS from "Sign/default.latte" to "sign.js"
+    - Decouple "HomePresenter" class represent "Customer", "Activities" and "Activity Comments" business logic
