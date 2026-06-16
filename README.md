@@ -85,7 +85,15 @@ http://127.0.0.1:8081/
    - Show tree Directory/Files in a container: 
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
 
+## Developer Notes
+    - "api" directory is for backend and frontend
+    - "docker" directory is for Dockerfiles of: Nginx, MySql, PHP
+    - "Presentation/Home" MVC for Customers + Activities + Comments - http://127.0.0.1:8080/
+    - "Presentation/Sign" for login "admin" and "operator" role - http://127.0.0.1:8080/sign/in
+        (Model/UserAuthenticator - authenticate users)
+
 ## TODO list
-    - Enum activities in "type"
-    - Date format in "created_at"
+    - Enum activitiy-comment "type"
+    - Date format in "created_at" in View
   
+    
