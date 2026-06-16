@@ -85,6 +85,8 @@ http://127.0.0.1:8081/
    - Show tree Directory/Files in a container: 
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
 
-## Development Notes
-
+## TODO list
+    - Enum activities in "type"
+    - Add "updated_at" attribute
+    - Add "deleted_at" attribute
   

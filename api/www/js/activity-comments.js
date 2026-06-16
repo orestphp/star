@@ -1,34 +1,26 @@
-// Open Modal Context Window
+// Comment Activity (Modal)
 function openCommentModal(customerId, customerName) {
     $('#modalCustomerId').val(customerId);
-    $('#modalCustomerName').html('Logging timeline entry note for: <strong>' + customerName + '</strong>');
+    $('#modalCustomerName').html('<strong>' + customerName + '</strong>');
     $('#commentText').val(''); // Clear old values
 
-    // 💡 Switch this on as flex layout so inner contents render properly inside the screen viewport center
+    // Switch this on as flex layout so inner contents render properly inside the screen viewport center
     $('#commentModal').css('display', 'flex');
 }
 
-function closeCommentModal() {
-    $('#commentModal').css('display', 'none');
-}
-
-// Close Modal
-function closeCommentModal() {
-    $('#commentModal').css('display', 'none');
-}
-
 $(document).ready(function() {
-// Intercept form submissions inside the dialogue window block
+
+    // Comment Form
     $('#commentForm').on('submit', function(e) {
         e.preventDefault();
 
         var customerId = $('#modalCustomerId').val();
         var commentStr = $('#commentText').val();
 
-        // 💡 1. Grab the active option value from your new dropdown select box
+        // 1. Grab the active option value from your new dropdown select box
         var selectedType = $('#commentTypeSelector').val() || 'COMMENT';
 
-        // 💡 2. Append the &type= parameter securely to your query string line
+        // 2. Append the &type= parameter securely to your query string line
         var submissionUrl = '?do=addComment' +
             '&customerId=' + customerId +
             '&comment=' + encodeURIComponent(commentStr) +
@@ -60,24 +52,19 @@ $(document).ready(function() {
     });
 });
 
-// Close Inspection Modal Window
-function closeActivityModal() {
-    $('#activityDetailsModal').css('display', 'none');
-}
-
 $(document).ready(function() {
-    // 1. Row Click: Load values into the editable inspection window
-// Catch row clicks inside your dynamic history log stream
+
+    // Activity Row Click
     $(document).on('click', '.interactive-activity-item', function(e) {
         e.stopPropagation();
 
-        // 💡 Use .attr() instead of .data() to ensure a fresh read from the DOM
+        // Activity fresh read from the DOM
         var id     = $(this).attr('data-id');
         var type   = $(this).attr('data-type') || 'LOG';
         var time   = $(this).attr('data-time') || '';
         var detail = $(this).attr('data-detail') || '';
 
-        // Debug check: Verify the ID is no longer undefined or empty in your console
+        // Debug check: Verify the ID is no longer undefined or empty
         console.log("Selected Activity ID to edit:", id);
 
         // Assign values to the hidden form elements inside the modal window
@@ -90,13 +77,12 @@ $(document).ready(function() {
         $('#activityDetailsModal').css('display', 'flex');
     });
 
-    // 2. Form Submission: Send modifications back via AJAX signal
+    // Activity Form
     $('#updateActivityForm').on('submit', function(e) {
         e.preventDefault();
 
         var id        = $('#inspectActivityId').val();
         var updateStr = $('#inspectDetail').val();
-
         var submissionUrl = '?do=updateComment&activityId=' + id + '&detail=' + encodeURIComponent(updateStr);
 
         $.ajax({
@@ -123,3 +109,13 @@ $(document).ready(function() {
         });
     });
 });
+
+// Close Comment (Modal)
+function closeCommentModal() {
+    $('#commentModal').css('display', 'none');
+}
+
+// Close Activity (Modal)
+function closeActivityModal() {
+    $('#activityDetailsModal').css('display', 'none');
+}

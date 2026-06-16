@@ -12,19 +12,19 @@
 			<div style="width: 160px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Status</label>
 				<select name="status" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff; box-sizing: border-box;">
-					<option value="all" {if $status === 'all'}selected{/if}>All Profiles</option>
-					<option value="active" {if $status === 'active'}selected{/if}>Active Only</option>
-					<option value="inactive" {if $status === 'inactive'}selected{/if}>Inactive Only</option>
+					<option value="all" {if $status === 'all'}selected{/if}>All</option>
+					<option value="active" {if $status === 'active'}selected{/if}>Active</option>
+					<option value="inactive" {if $status === 'inactive'}selected{/if}>Inactive</option>
 				</select>
 			</div>
 
 			<div style="width: 180px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Sort By</label>
 				<select name="sort" style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background: #fff; box-sizing: border-box;">
-					<option value="created_desc" {if $sort === 'created_desc'}selected{/if}>Newest Joined</option>
-					<option value="created_asc" {if $sort === 'created_asc'}selected{/if}>Oldest Joined</option>
-					<option value="name_asc" {if $sort === 'name_asc'}selected{/if}>Name (A-Z)</option>
-					<option value="name_desc" {if $sort === 'name_desc'}selected{/if}>Name (Z-A)</option>
+					<option value="created_desc" {if $sort === 'created_desc'}selected{/if}>Newest</option>
+					<option value="created_asc" {if $sort === 'created_asc'}selected{/if}>Oldest</option>
+					<option value="name_asc" {if $sort === 'name_asc'}selected{/if}>Name (Asc)</option>
+					<option value="name_desc" {if $sort === 'name_desc'}selected{/if}>Name (Desc)</option>
 				</select>
 			</div>
 
@@ -159,10 +159,11 @@
 		</form>
 	</div>
 </div>
+
 <div id="commentModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; padding: 1rem; box-sizing: border-box;">
 	<div style="background: #ffffff !important; border: 1px solid #e5e7eb; padding: 1.75rem; border-radius: 8px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15); position: relative; box-sizing: border-box; display: block;">
 
-		<h4 style="margin-top: 0; margin-bottom: 0.25rem; color: #1f2937; font-size: 1.15rem; font-weight: 700;">Add Operator Comment</h4>
+		<h4 style="margin-top: 0; margin-bottom: 0.25rem; color: #1f2937; font-size: 1.15rem; font-weight: 700;">Add Comment</h4>
 		<p id="modalCustomerName" style="margin-top: 0; margin-bottom: 1.25rem; font-size: 0.85rem; color: #6b7280; font-weight: 500;"></p>
 
 		<form id="commentForm">
@@ -173,10 +174,10 @@
 
 				<select name="type" id="commentTypeSelector"
 						style="display: block !important; visibility: visible !important; opacity: 1 !important; width: 100%; padding: 0.6rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.875rem; background-color: #ffffff !important; color: #1f2937 !important; box-sizing: border-box; font-family: inherit; height: 38px; -webkit-appearance: select !important; -moz-appearance: select !important; appearance: select !important;">
-					<option value="COMMENT">Comment / internal Note</option>
-					<option value="CALL">Outbound Phone Call Log</option>
-					<option value="EMAIL">Direct Email Update</option>
-					<option value="SYSTEM">Manual Status Overwrite</option>
+					<option value="COMMENT">Comment</option>
+					<option value="CALL">Call</option>
+					<option value="EMAIL">Email</option>
+					<option value="MEETING">Meeting</option>
 				</select>
 			</div>
 
