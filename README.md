@@ -87,6 +87,5 @@ http://127.0.0.1:8081/
 
 ## TODO list
     - Enum activities in "type"
-    - Add "updated_at" attribute
-    - Add "deleted_at" attribute
+    - Date format in "created_at"
   

@@ -86,49 +86,43 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     /**
-     * ⚡ AJAX Signal Handler: Adds a new operator comment note safely
+     * ⚡ AJAX Signal Handler: Now accepts the explicit type parameter from the query string!
      */
-    public function handleAddComment(int $customerId, string $comment): void
+    public function handleAddComment(int $customerId, string $comment, string $type = 'COMMENT'): void
     {
-        // 1. Fetch a dummy or existing row from activities to check column keys safely
+        // 1. Fetch a row to safely inspect column layout schemas
         $existingRow = $this->database->table('activities')->limit(1)->fetch();
+        $rowKeys = $existingRow ? array_keys($existingRow->toArray()) : ['customer_id', 'detail', 'type', 'created_at'];
 
-        // Fallback default array if the table is completely empty
-        $rowKeys = $existingRow
-            ? array_keys($existingRow->toArray())
-            : ['customer_id', 'detail', 'type', 'created_at'];
-
-        // 2. Map out the correct foreign key field
         $foreignKey = 'customer_id';
         foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
             if (in_array($col, $rowKeys, true)) { $foreignKey = $col; break; }
         }
 
-        // 3. Map out the correct comment/detail text field
         $textField = 'detail';
         foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
             if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
         }
 
-        // 4. Build our data entry matrix array
+        // Prepare insertion payload array
         $insertData = [
-            $foreignKey => $customerId,
-            $textField  => trim($comment),
-            'created_at' => new \DateTime(), // or use NOW() database side
+            $foreignKey  => $customerId,
+            $textField   => trim($comment),
+            'created_at' => new \DateTime(),
         ];
 
-        // 5. Match and insert a type column if it exists in your schema
+        // 2. Bind the incoming $type safely into your active database schema column
         foreach (['type', 'action_type', 'action'] as $col) {
             if (in_array($col, $rowKeys, true)) {
-                $insertData[$col] = 'COMMENT'; // Explicit classification tag
+                $insertData[$col] = strtoupper(trim($type)); // Saves 'CALL', 'EMAIL', 'MEETING', etc.
                 break;
             }
         }
 
-        // 6. Execute safe insert statement
+        // 3. Execute safe database record assignment
         $this->database->table('activities')->insert($insertData);
 
-        // 7. Retain structural presentation variables for snippet redraw
+        // 4. Reload your presentation views for snippet updates
         $this->selectedCustomerId = $customerId;
 
         if (method_exists($this, 'loadCustomerActivities')) {
@@ -141,7 +135,6 @@ final class HomePresenter extends Nette\Application\UI\Presenter
                 ->limit(50);
         }
 
-        // Redraw snippet for seamless dynamic UI tracking updates
         if ($this->isAjax()) {
             $this->redrawControl('activitiesSnippet');
         } else {
