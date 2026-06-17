@@ -86,14 +86,14 @@ http://127.0.0.1:8081/
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
 
 ## Developer Notes
-    - "docker" directory is for Dockerfiles of: Nginx, MySql, PHP
-    - "api" directory is for backend and frontend
-    - "Presentation/Home/HomePresenter"  - http://127.0.0.1:8080/
-    - "Presentation/Sign/SignPresenter" for login "admin/operator" role - http://127.0.0.1:8080/sign/in
-    - Framework use: 
+    - Docker architecture for Nginx, MySql, PHP, pHpMyAdmin
+    - Nette Framework use: 
         Service-Repository pattern 
             * Used by CustomerService [User + Activity + Comment] to decouple Logic from Presenter
         CsrfMiddleware
+        Unit Testing: at "- Run all tests" section
+    - Customer management - http://127.0.0.1:8080/
+    - Login "admin/operator" role - http://127.0.0.1:8080/sign/in
 
 ## TODO list
     - Enum activitiy-comment "type"
