@@ -74,7 +74,6 @@
             e.preventDefault();
 
             const $form = $(this);
-            // 🎯 FALLBACK: Keep this as a backup if the server doesn't return a target
             let redirectUrl = $('.login-container').data('redirect-url');
 
             const $submitBtn = $('#btn-login');
@@ -91,10 +90,10 @@
             $spinner.show();
 
             $.ajax({
-                url: window.location.pathname, // 🎯 Points cleanly to http://127.0.0.1:8080/sign/in
+                url: window.location.pathname, // Points to /sign/in
                 type: 'POST',
                 dataType: 'json',
-                data: $form.serialize(), // 🎯 Standard key-value serialized fields
+                data: $form.serialize(),
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 },
