@@ -86,11 +86,14 @@ http://127.0.0.1:8081/
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
 
 ## Developer Notes
-    - "api" directory is for backend and frontend
     - "docker" directory is for Dockerfiles of: Nginx, MySql, PHP
-    - "Presentation/Home" MVC for Customers + Activities + Comments - http://127.0.0.1:8080/
-    - "Presentation/Sign" for login "admin" and "operator" role - http://127.0.0.1:8080/sign/in
-        (Model/UserAuthenticator - authenticate users)
+    - "api" directory is for backend and frontend
+    - "Presentation/Home/HomePresenter"  - http://127.0.0.1:8080/
+    - "Presentation/Sign/SignPresenter" for login "admin/operator" role - http://127.0.0.1:8080/sign/in
+    - Framework use: 
+        Service-Repository pattern 
+            * Used by CustomerService [User + Activity + Comment] to decouple Logic from Presenter
+        CsrfMiddleware
 
 ## TODO list
     - Enum activitiy-comment "type"
@@ -98,4 +101,3 @@ http://127.0.0.1:8081/
     - Paginate Activity list: * Max 50 recent records shown
     - Move CSS from "Home/default.latte" to "customer.css"
     - Move JS from "Sign/default.latte" to "sign.js"
-    - Decouple "HomePresenter" class represent "Customer", "Activities" and "Activity Comments" business logic
