@@ -38,7 +38,17 @@ di:
 
 services:
     - App\Model\UserAuthenticator
+
+    # Middleware
     - App\Middleware\CsrfMiddlewareListener
+
+    # Repositories
+    - App\Repository\UserRepository
+    - App\Repository\ActivityRepository
+    - App\Repository\CommentRepository
+
+    # Services
+    - App\Service\CustomerService
 
     # Bind listener to the Nette Application's onPresenter array event:
     application.application:

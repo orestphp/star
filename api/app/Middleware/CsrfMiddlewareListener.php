@@ -17,8 +17,13 @@ class CsrfMiddlewareListener
         private Nette\Http\Session $session
     ) {}
 
-    public function __invoke(Application $application, Presenter $presenter): void
+    public function __invoke(Nette\Application\Application $application, Nette\Application\IPresenter $presenter): void
     {
+        // Change type-hint above to IPresenter, and guard here
+        if (!$presenter instanceof Presenter) {
+            return;
+        }
+
         // Intercept all POST methods framework-wide
         if ($this->httpRequest->isMethod('POST')) {
 

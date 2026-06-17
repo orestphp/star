@@ -1,19 +1,11 @@
 <?php
-// [app/Presentation/Home/HomePresenter.php]
-
 declare(strict_types=1);
 
 namespace App\Presentation\Home;
 
 use Nette;
-use Nette\Database\Explorer;
+use App\Service\CustomerService;
 
-/**
- * This class represent "Customer", "Activities" and "Activity Comments" business logic
- *
- * Class HomePresenter
- * @package App\Presentation\Home
- */
 final class HomePresenter extends Nette\Application\UI\Presenter
 {
     /** @persistent */
@@ -25,9 +17,9 @@ final class HomePresenter extends Nette\Application\UI\Presenter
 
     /** @persistent */
     public ?int $selectedCustomerId = null;
-
+    
     public function __construct(
-        private Explorer $database
+        private CustomerService $customerService
     ) {}
 
     protected function startup(): void
@@ -40,53 +32,28 @@ final class HomePresenter extends Nette\Application\UI\Presenter
 
     public function renderDefault(): void
     {
-        $query = $this->database->table('users')->where('role = ?', 'customer');
+        $data = $this->customerService->getCustomerManagementData(
+            $this->search,
+            $this->status,
+            $this->sort,
+            $this->selectedCustomerId
+        );
 
-        if (!empty($this->search)) {
-            $tokens = '%' . $this->search . '%';
-            $query->where('name LIKE ? OR email LIKE ?', $tokens, $tokens);
-        }
+        $this->template->customers = $data['customers'];
+        $this->template->selectedCustomer = $data['selectedCustomer'];
+        $this->template->activities = $data['activities'];
 
-        if ($this->status === 'active') {
-            $query->where('is_active = ?', 1);
-        } elseif ($this->status === 'inactive') {
-            $query->where('is_active = ?', 0);
-        }
-
-        switch ($this->sort) {
-            case 'name_asc': $query->order('name ASC'); break;
-            case 'name_desc': $query->order('name DESC'); break;
-            case 'created_asc': $query->order('created_at ASC'); break;
-            case 'created_desc':
-            default:
-                $query->order('created_at DESC');
-                break;
-        }
-
-        $this->template->customers = $query->fetchAll();
         $this->template->search = $this->search;
         $this->template->status = $this->status;
         $this->template->sort = $this->sort;
 
-        if ($this->selectedCustomerId !== null) {
-            $this->loadCustomerActivities($this->selectedCustomerId);
-        } else {
-            $this->template->activities = [];
-            $this->template->selectedCustomer = null;
-        }
-
-        //pass token
         $section = $this->getSession()->getSection('Nette.Forms.Form');
         $this->template->csrfToken = $section->token ??= Nette\Utils\Random::generate();
     }
 
-    /**
-     * ⚡ AJAX Signal Handler: Customer Row Click Action
-     */
     public function handleLoadActivities(int $customerId): void
     {
         $this->selectedCustomerId = $customerId;
-        $this->loadCustomerActivities($customerId);
 
         if ($this->isAjax()) {
             $this->redrawControl('activitiesSnippet');
@@ -95,42 +62,10 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    /**
-     * ⚡ AJAX Signal Handler: Create activity
-     */
     public function handleAddActivity(int $customerId, string $comment, string $type = 'COMMENT'): void
     {
-        // Safely extract table layout schema columns using dynamic inspection loops
-        $existingRow = $this->database->table('activities')->limit(1)->fetch();
-        $rowKeys = $existingRow ? array_keys($existingRow->toArray()) : ['customer_id', 'detail', 'type', 'created_at'];
-
-        $foreignKey = 'customer_id';
-        foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
-            if (in_array($col, $rowKeys, true)) { $foreignKey = $col; break; }
-        }
-
-        $textField = 'detail';
-        foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
-            if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
-        }
-
-        $insertData = [
-            $foreignKey  => $customerId,
-            $textField   => trim($comment),
-            'created_at' => new \DateTime(),
-        ];
-
-        foreach (['type', 'action_type', 'action'] as $col) {
-            if (in_array($col, $rowKeys, true)) {
-                $insertData[$col] = strtoupper(trim($type));
-                break;
-            }
-        }
-
-        $this->database->table('activities')->insert($insertData);
-
+        $this->customerService->createActivity($customerId, $comment, $type);
         $this->selectedCustomerId = $customerId;
-        $this->loadCustomerActivities($customerId);
 
         if ($this->isAjax()) {
             $this->redrawControl('activitiesSnippet');
@@ -139,32 +74,12 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
-    /**
-     * ⚡ AJAX Endpoint: Get Comments
-     */
     public function handleGetComments(int $activityId): void
     {
-        $rows = $this->database->table('comments')
-            ->where('activity_id = ?', $activityId)
-            ->order('created_at ASC')
-            ->fetchAll();
-
-        $commentsPayload = [];
-        foreach ($rows as $row) {
-            $commentsPayload[] = [
-                'id'          => $row->id,
-                'user_id'     => $row->user_id ?? 1,
-                'text'        => $row->text,
-                'created_at'  => $row->created_at->format('Y-m-d H:i:s'),
-            ];
-        }
-
-        $this->sendJson(['comments' => $commentsPayload]);
+        $comments = $this->customerService->getActivityComments($activityId);
+        $this->sendJson(['comments' => $comments]);
     }
 
-    /**
-     * ⚡ AJAX Endpoint: Appends an ongoing thread sub-comment record entry securely
-     */
     public function handleAddActivityComment(): void
     {
         $activityId = (int) $this->getParameter('activityId');
@@ -175,45 +90,9 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             return;
         }
 
-        $this->database->table('comments')->insert([
-            'activity_id' => $activityId,
-            'user_id'     => $this->getUser()->getId() ?? 1,
-            'text'        => trim($text),
-            'created_at'  => new \DateTime(),
-            'updated_at'  => new \DateTime()
-        ]);
+        $userId = $this->getUser()->getId() ?? 1;
+        $this->customerService->addCommentToActivity($activityId, $userId, $text);
 
         $this->sendJson(['success' => true]);
-    }
-
-    /**
-     * 🔒 Internal Helper: Populates timeline parameters safe from DriverExceptions
-     */
-    private function loadCustomerActivities(int $customerId): void
-    {
-        $customer = $this->database->table('users')->get($customerId);
-        if (!$customer) {
-            return;
-        }
-
-        $this->template->selectedCustomer = $customer;
-        $columnFallbacks = ['customer_id', 'id_user', 'id_customer', 'user_id'];
-
-        foreach ($columnFallbacks as $column) {
-            try {
-                $this->template->activities = $this->database->table('activities')
-                    ->where("$column = ?", $customerId)
-                    ->order('created_at DESC')
-                    ->limit(50)
-                    ->fetchAll();
-
-                break;
-            } catch (\Nette\Database\DriverException $e) {
-                if ($column === end($columnFallbacks)) {
-                    throw $e;
-                }
-                continue;
-            }
-        }
     }
 }
