@@ -25,7 +25,17 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     protected function startup(): void
     {
         parent::startup();
+
+        // Force authentication check globally
         if (!$this->getUser()->isLoggedIn()) {
+            $this->redirect('Sign:in');
+        }
+
+        // Role validation
+        $userRole = $this->getUser()->getRoles()[0] ?? ''; // Returns array of roles from SimpleIdentity
+        if (!in_array($userRole, ['admin', 'operator'], true)) {
+            $this->getUser()->logout(true); // Evict user identity structure completely
+            $this->flashMessage('Access denied. Insufficient account privileges.', 'danger');
             $this->redirect('Sign:in');
         }
     }
@@ -46,6 +56,11 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         $this->template->search = $this->search;
         $this->template->status = $this->status;
         $this->template->sort = $this->sort;
+
+        // Redraw the customer snippet block if requested via AJAX search/filters
+        if ($this->isAjax()) {
+            $this->redrawControl('customersSnippet');
+        }
 
         $section = $this->getSession()->getSection('Nette.Forms.Form');
         $this->template->csrfToken = $section->token ??= Nette\Utils\Random::generate();

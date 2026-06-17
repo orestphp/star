@@ -1,4 +1,56 @@
 $(document).ready(function() {
+    var searchTimeout = null;
+
+    // Search via AJAX
+    function triggerFilterUpdate() {
+        var $form = $('#customerFilterForm');
+        var targetUrl = $form.attr('action') || window.location.pathname;
+        var formData = $form.serialize();
+
+        $.ajax({
+            url: targetUrl,
+            type: 'GET',
+            data: formData,
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(payload) {
+                if (payload && payload.snippets) {
+                    for (var id in payload.snippets) {
+                        var $container = $('#' + id);
+                        if ($container.length) {
+                            $container.html(payload.snippets[id]);
+                        } else {
+                            $('[id$="' + id.replace('snippet--', '') + '"]').html(payload.snippets[id]);
+                        }
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Automated customer filter update failed:", error);
+            }
+        });
+    }
+
+    // Instant execution when a dropdown status or sort order changes
+    $('#customerFilterForm select').on('change', function() {
+        triggerFilterUpdate();
+    });
+
+    // Debounced execution for typing in the text input box
+    $('#customerFilterForm input[name="search"]').on('input', function() {
+        clearTimeout(searchTimeout);
+
+        // Wait 300ms after the user stops typing to make request
+        searchTimeout = setTimeout(function() {
+            triggerFilterUpdate();
+        }, 300);
+    });
+
+    // Prevent hit of enter key inside search box from reloading the full page
+    $('#customerFilterForm').on('submit', function(e) {
+        e.preventDefault();
+    });
+
     $(document).on('click', '.customer-row', function(e) {
         e.preventDefault();
 
@@ -12,7 +64,7 @@ $(document).ready(function() {
             url: targetUrl,
             type: 'GET',
             dataType: 'json',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Signals Nette to send back a JSON snippet payload
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
             success: function(payload) {
                 if (payload && payload.snippets) {
                     for (var id in payload.snippets) {
@@ -20,7 +72,6 @@ $(document).ready(function() {
                         if ($container.length) {
                             $container.html(payload.snippets[id]);
                         } else {
-                            // Wildcard fallback pattern mapping selector if Nette alters ID structural prefixing
                             $('[id$="' + id.replace('snippet--', '') + '"]').html(payload.snippets[id]);
                         }
                     }
@@ -32,3 +83,4 @@ $(document).ready(function() {
         });
     });
 });
+

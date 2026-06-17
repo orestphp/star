@@ -2,7 +2,7 @@
 <div class="dashboard-container" style="padding: 2rem; font-family: 'Inter', sans-serif;">
 
 	<div class="filter-panel" style="background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
-		<form method="get" action="{link this}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
+		<form id="customerFilterForm" method="get" action="{link this}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end;">
 
 			<div style="flex: 1; min-width: 250px;">
 				<label style="display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.35rem;">Search Profile</label>
@@ -29,9 +29,6 @@
 			</div>
 
 			<div style="display: flex; gap: 0.5rem;">
-				<button type="submit" style="background: #2563eb; color: #fff; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
-					Apply Filters
-				</button>
 				<a href="{link Home:default, search => '', status => 'all', sort => 'created_desc'}" style="background: #f3f4f6; color: #4b5563; padding: 0.5rem 1.25rem; text-decoration: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; line-height: 1.25rem;">
 					Reset
 				</a>
@@ -42,6 +39,7 @@
 	<div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start;">
 
 		<div class="customer-section" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+			{snippet customersSnippet}
 			{if count($customers) > 0}
 			<table style="width: 100%; border-collapse: collapse; text-align: left;">
 				<thead>
@@ -74,6 +72,7 @@
 			{else}
 			<p style="color: #6b7280; font-style: italic; text-align: center; padding: 2rem;">No customer profiles match criteria.</p>
 			{/if}
+			{/snippet}
 		</div>
 
 		<div id="activity-history-panel" style="background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); min-height: 400px;">

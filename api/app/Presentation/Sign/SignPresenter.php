@@ -17,8 +17,42 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 
     public function actionIn(): void
     {
+        // 1. If already logged in, send them away
         if ($this->getUser()->isLoggedIn()) {
             $this->redirect('Home:default');
+        }
+
+        // 2. Capture direct AJAX POST requests bypassing the form pipeline
+        if ($this->getHttpRequest()->isMethod('POST')) {
+            try {
+                $this->securityUser->logout(true);
+
+                // Read values directly from raw post data
+                $username = $this->getHttpRequest()->getPost('username') ?: '';
+                $password = $this->getHttpRequest()->getPost('password') ?: '';
+
+                if (empty($username) || empty($password)) {
+                    throw new AuthenticationException('Email and password fields are required.');
+                }
+
+                // Authenticate credentials
+                $this->securityUser->login($username, $password);
+
+                $this->sendJson([
+                    'success' => true,
+                    'message' => 'Login successful!',
+                    'redirect' => $this->link('Home:default')
+                ]);
+
+            } catch (AuthenticationException $e) {
+                $this->securityUser->logout(true);
+                $this->getHttpResponse()->setCode(Nette\Http\IResponse::S401_UNAUTHORIZED);
+
+                $this->sendJson([
+                    'success' => false,
+                    'message' => $e->getMessage() ?: 'Invalid email address or password.'
+                ]);
+            }
         }
     }
 
@@ -33,6 +67,7 @@ final class SignPresenter extends Nette\Application\UI\Presenter
     {
         $form = new Form;
 
+        // Use standard protection
         $form->addProtection('Security token expired, please refresh and sign in again.');
         $form->addEmail('username')->setRequired();
         $form->addPassword('password')->setRequired();
@@ -41,19 +76,29 @@ final class SignPresenter extends Nette\Application\UI\Presenter
         $form->onSuccess[] = function (Form $form, \stdClass $data): void {
             if ($this->isAjax()) {
                 try {
-                    // Nette now automatically knows how to handle this!
+                    // 1. Force wipe any weird session legacy tokens
+                    $this->securityUser->logout(true);
+
+                    // 2. Perform credential authentication
                     $this->securityUser->login($data->username, $data->password);
 
-                    $this->sendResponse(new JsonResponse([
+                    // 3. Success! Send response back
+                    $this->sendJson([
                         'success' => true,
-                        'message' => 'Login successful!'
-                    ]));
+                        'message' => 'Login successful!',
+                        'redirect' => $this->link('Home:default')
+                    ]);
+
                 } catch (AuthenticationException $e) {
+                    $form->getComponent(Form::PROTECTOR_ID)->loadHttpData();
+
+                    $this->securityUser->logout(true);
                     $this->getHttpResponse()->setCode(Nette\Http\IResponse::S401_UNAUTHORIZED);
-                    $this->sendResponse(new JsonResponse([
+
+                    $this->sendJson([
                         'success' => false,
-                        'message' => $e->getMessage() ?: 'Invalid email address or password.'
-                    ]));
+                        'message' => $e->getMessage() ?: 'Invalid credentials.'
+                    ]);
                 }
             }
         };

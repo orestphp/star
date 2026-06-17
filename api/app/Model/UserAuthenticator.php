@@ -43,10 +43,15 @@ final class UserAuthenticator implements IAuthenticator
             throw new AuthenticationException('Invalid password.');
         }
 
+        $allowedRoles = ['admin', 'operator'];
+        if (!in_array($row->role, $allowedRoles, true)) {
+            throw new AuthenticationException('Access denied. You do not have permission to view this console.');
+        }
+
         // 5. Dispatch validated web session identity with real schema columns
         return new SimpleIdentity(
             $row->id,
-            $row->role, // 'admin', 'operator', or 'customer'
+            $row->role, // 'admin' or 'operator'
             [
                 'email' => $row->email,
                 'name' => $row->name

@@ -42,12 +42,12 @@
     <div id="alert-error" class="alert alert-danger"></div>
     <div id="alert-success" class="alert alert-success"></div>
 
-    <form n:name="loginForm" id="ajax-login-form">
+    <form id="ajax-login-form">
         <div class="form-group">
             <label for="email">Email Address</label>
             <div class="input-wrapper">
                 <i class="fa-solid fa-envelope"></i>
-                <input n:name="username" id="email" class="form-control" placeholder="admin@admin.com">
+                <input type="email" name="username" id="email" class="form-control" required placeholder="admin@admin.com">
             </div>
         </div>
 
@@ -55,7 +55,7 @@
             <label for="password">Password</label>
             <div class="input-wrapper">
                 <i class="fa-solid fa-lock"></i>
-                <input n:name="password" id="password" class="form-control" placeholder="••••••••">
+                <input type="password" name="password" id="password" class="form-control" required placeholder="••••••••">
             </div>
         </div>
 
@@ -71,10 +71,11 @@
 <script>
     $(document).ready(function() {
         $('#ajax-login-form').on('submit', function(e) {
-            e.preventDefault(); // Stop normal synchronous page load
+            e.preventDefault();
 
             const $form = $(this);
-            const redirectUrl = $('.login-container').data('redirect-url');
+            // 🎯 FALLBACK: Keep this as a backup if the server doesn't return a target
+            let redirectUrl = $('.login-container').data('redirect-url');
 
             const $submitBtn = $('#btn-login');
             const $btnText = $('#btn-text');
@@ -90,23 +91,25 @@
             $spinner.show();
 
             $.ajax({
-                url: $form.attr('action'),
+                url: window.location.pathname, // 🎯 Points cleanly to http://127.0.0.1:8080/sign/in
                 type: 'POST',
                 dataType: 'json',
-                // Append '&send=1' so Nette processes the matching Form submit button event hook
-                data: $form.serialize() + '&send=1',
+                data: $form.serialize(), // 🎯 Standard key-value serialized fields
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest' // Standard flag for Nette's $this->isAjax() identification
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 timeout: 5000,
                 success: function(response) {
                     $spinner.hide();
+                    if (response && response.redirect) {
+                        redirectUrl = response.redirect;
+                    }
                     $btnText.text('Redirecting...');
-                    $successAlert.text('Login successful! Redirecting to dashboard...').fadeIn();
+                    $successAlert.text(response.message || 'Login successful!').fadeIn();
 
                     setTimeout(function() {
                         window.location.href = redirectUrl;
-                    }, 1000);
+                    }, 800);
                 },
                 error: function(xhr, status, error) {
                     $spinner.hide();
@@ -114,11 +117,8 @@
                     $btnText.text('Sign In');
 
                     let errorMessage = 'An error occurred during authentication. Please try again.';
-
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         errorMessage = xhr.responseJSON.message;
-                    } else if (xhr.status === 401) {
-                        errorMessage = 'Invalid username or password configuration.';
                     }
 
                     $errorAlert.text(errorMessage).fadeIn();
