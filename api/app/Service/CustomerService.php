@@ -73,7 +73,7 @@ class CustomerService
             'user_id'     => $userId,
             'text'        => trim($text),
             'created_at'  => new \DateTime(),
-            'updated_at'  => new \DateTime()
+            'updated_at'  => new \DateTime()// TODO: Just in case soft delete will be implemented
         ]);
     }
 }
