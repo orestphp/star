@@ -97,15 +97,36 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     }
 
     // Add Customer-Activity
-    public function handleAddActivity(int $customerId, string $comment, string $type = 'COMMENT'): void
+    public function handleAddActivity(): void
     {
-        $this->customerService->createActivity($customerId, $comment, $type);
-        $this->selectedCustomerId = $customerId;
+        try {
+            // Validate POST
+            $activityRequest = \App\Model\Request\ActivityCreateRequest::fromHttpRequest($this->getHttpRequest());
 
-        if ($this->isAjax()) {
-            $this->redrawControl('activitiesSnippet');
-        } else {
-            $this->redirect('this');
+            // Pass the safe into service
+            $this->customerService->createActivity(
+                $activityRequest->customerId,
+                $activityRequest->comment ?? '',
+                $activityRequest->type
+            );
+
+            $this->selectedCustomerId = $activityRequest->customerId;
+
+            if ($this->isAjax()) {
+                $this->redrawControl('activitiesSnippet');
+            } else {
+                $this->redirect('this');
+            }
+
+        } catch (\Webmozart\Assert\InvalidArgumentException $e) {
+            // Handle validation failure gracefully (for AJAX responses or Flash messages)
+            if ($this->isAjax()) {
+                $this->getHttpResponse()->setCode(400);
+                $this->sendJson(['error' => $e->getMessage()]);
+            } else {
+                $this->flashMessage($e->getMessage(), 'danger');
+                $this->redirect('this');
+            }
         }
     }
 

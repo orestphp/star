@@ -54,6 +54,7 @@
       <path value="$PROJECT_DIR$/api/vendor/nette/di" />
       <path value="$PROJECT_DIR$/api/vendor/nette/mail" />
       <path value="$PROJECT_DIR$/api/vendor/nette/assets" />
+      <path value="$PROJECT_DIR$/api/vendor/webmozart/assert" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

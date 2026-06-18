@@ -9,7 +9,9 @@
 
 ## Developer Notes
     - Docker architecture for Nginx, MySql, PHP, pHpMyAdmin
-    - Used design patterns: 
+    - Used patterns:
+        * Request/DTO (Data Transfer Object) factory pattern that handles validation rules
+            # app/Model/Request/ActivityCreateRequest
         * Service-Repository pattern 
             CustomerService [
                 UserRepository, 
@@ -142,3 +144,4 @@ http://127.0.0.1:8081/
     - Date format in "created_at" in View
     - Paginate Activity list: * Max 50 recent records shown
     - Decouple JS & CSS from "Sign/default.latte"
+    - Create global Request class (to pass data to Presenter and have a single place to validate data)
