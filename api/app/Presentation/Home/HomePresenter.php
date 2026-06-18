@@ -140,17 +140,36 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     // Add Customer-Activity-Comment
     public function handleAddActivityComment(): void
     {
-        $activityId = (int) $this->getParameter('activityId');
-        $text = $this->getParameter('text');
+        try {
+            $httpRequest = $this->getHttpRequest();
+            $postData = $httpRequest->getPost();
 
-        if (empty(trim($text))) {
-            $this->sendJson(['success' => false, 'error' => 'Comment body context block cannot be blank.']);
-            return;
+            // Enforce strict typing
+            $activityId = isset($postData['activityId']) ? (int)$postData['activityId'] : 0;
+            $text = trim((string)($postData['text'] ?? ''));
+
+            if ($activityId <= 0) {
+                throw new \InvalidArgumentException('A valid Activity ID is required.');
+            }
+
+            if ($text === '') {
+                throw new \InvalidArgumentException('Comment cannot be blank.');
+            }
+
+            // Safely extract the active session user token
+            $userId = $this->getUser()->getId();
+            if ($userId === null) {
+                throw new \InvalidArgumentException('User session has expired. Please re-authenticate.');
+            }
+
+            // Pass clean state to services
+            $this->customerService->addCommentToActivity($activityId, $userId, $text);
+
+            $this->sendJson(['success' => true]);
+
+        } catch (\InvalidArgumentException $e) {
+            $this->getHttpResponse()->setCode(400);
+            $this->sendJson(['success' => false, 'error' => $e->getMessage()]);
         }
-
-        $userId = $this->getUser()->getId() ?? 1;
-        $this->customerService->addCommentToActivity($activityId, $userId, (string)$text);
-
-        $this->sendJson(['success' => true]);
     }
 }
