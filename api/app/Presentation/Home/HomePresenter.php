@@ -28,19 +28,6 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         parent::startup();
 
-        // Force authentication check globally
-        if (!$this->getUser()->isLoggedIn()) {
-            $this->redirect('Sign:in');
-        }
-
-        // Home/Dashboard Authorization check
-        $userRole = $this->getUser()->getRoles()[0] ?? '';
-        if (!in_array($userRole, ['admin', 'operator'], true)) {
-            $this->getUser()->logout(true);
-            $this->flashMessage('Access denied. Insufficient account privileges.', 'danger');
-            $this->redirect('Sign:in');
-        }
-
         // CSRF token preparation
         $session = $this->getSession();
         if (!$session->isStarted()) {
@@ -51,7 +38,8 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         if (!isset($section->token)) {
             $section->token = bin2hex(random_bytes(16));
         }
-        $this->token = $section->token;
+
+        $this->token = (string) $section->token;
     }
 
     public function renderDefault(): void
