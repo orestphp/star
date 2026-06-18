@@ -16,9 +16,45 @@
                 ActivityRepository, 
                 CommentRepository
             ] // to decouple Logic from Presenter
-        * CsrfMiddleware
+        * Middleware [AuthenticationListener, CsrfMiddlewareListener]
+        * Dependency Injection
+            services:
+                # Model
+                # Middleware listeners
+                # Repositories
+                # Services
+        * Modal view Components
     - Unit Testing: at "- Run all tests" section
     - To Login with "admin/operator" role - http://127.0.0.1:8080/sign/in
+
+## Project Structure
+```text
+star/
+└── api/
+    └── app/
+        ├── Core/
+        ├── Middleware/
+        │   ├── AuthenticationListener.php
+        │   └── CsrfMiddlewareListener.php
+        ├── Model/
+        │   └── UserAuthenticator.php
+        ├── Presentation/
+        │   ├── Components/
+        │   │   ├── ActivityDetailsModal/
+        │   │   └── ActivityModal/
+        │   ├── Error/
+        │   ├── Home/
+        │   │   ├── default.latte
+        │   │   └── HomePresenter.php
+        │   └── Sign/
+        ├── Repository/
+        │   ├── ActivityRepository.php
+        │   ├── CommentRepository.php
+        │   └── UserRepository.php
+        ├── Service/
+        │   └── CustomerService.php
+        └── Bootstrap.php
+```
 
 ## Technologies Used
 
@@ -34,7 +70,7 @@
 After 'git clone':
 
 Make sure you have the right path in "docker-compose.yml:
-```
+
 services:
   # PHP (Nette API backend)
   app:

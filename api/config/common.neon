@@ -36,10 +36,12 @@ di:
         parameters: no
         tags: no
 
+
 services:
     - App\Model\UserAuthenticator
 
-    # Middleware
+    # Middleware listeners
+    - App\Middleware\AuthenticationListener
     - App\Middleware\CsrfMiddlewareListener
 
     # Repositories
@@ -50,7 +52,8 @@ services:
     # Services
     - App\Service\CustomerService
 
-    # Bind listener to the Nette Application's onPresenter array event:
+    # binding directly to Nette's framework instance array event stack
     application.application:
         setup:
+            - '$onPresenter[]' = [@App\Middleware\AuthenticationListener, '__invoke']
             - '$onPresenter[]' = [@App\Middleware\CsrfMiddlewareListener, '__invoke']
