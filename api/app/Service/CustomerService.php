@@ -32,30 +32,20 @@ class CustomerService
 
     public function createActivity(int $customerId, string $comment, string $type): void
     {
-        $rowKeys = $this->activityRepository->getSchemaKeys();
+        $activityType = strtoupper(trim($type));
 
-        $foreignKey = 'customer_id';
-        foreach (['customer_id', 'id_user', 'id_customer', 'user_id'] as $col) {
-            if (in_array($col, $rowKeys, true)) { $foreignKey = $col; break; }
-        }
-
-        $textField = 'detail';
-        foreach (['detail', 'description', 'details', 'message', 'comment'] as $col) {
-            if (in_array($col, $rowKeys, true)) { $textField = $col; break; }
+        // Validate type
+        $allowedTypes = ['COMMENT', 'CALL', 'EMAIL', 'MEETING', 'SYSTEM'];
+        if (!in_array($activityType, $allowedTypes, true)) {
+            throw new \InvalidArgumentException("Invalid activity type: {$type}");
         }
 
         $insertData = [
-            $foreignKey  => $customerId,
-            $textField   => trim($comment),
-            'created_at' => new \DateTime(),
+            'customer_id' => $customerId,
+            'type'        => $activityType,
+            'details'     => empty(trim($comment)) ? null : trim($comment), // Handles nullable text column safely
+            'created_at'  => new \DateTime(),
         ];
-
-        foreach (['type', 'action_type', 'action'] as $col) {
-            if (in_array($col, $rowKeys, true)) {
-                $insertData[$col] = strtoupper(trim($type));
-                break;
-            }
-        }
 
         $this->activityRepository->insert($insertData);
     }
