@@ -39,6 +39,8 @@ star/
         │   ├── AuthenticationListener.php
         │   └── CsrfMiddlewareListener.php
         ├── Model/
+        │   ├── Request/
+        │   │   └── ActivityCreateRequest.php
         │   └── UserAuthenticator.php
         ├── Presentation/
         │   ├── Components/
