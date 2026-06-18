@@ -1,3 +1,25 @@
+## Application description
+  - This is a simple application for managing: 
+        Customers, customer-activities and activity-comments
+  - Users with role "admin" and "operator" can login to Customers admin panel
+  - Login credentials:
+    * Admin: admin@admin.com password
+    * Operator: operator1@crm.com password
+    * Customer: john.doe@acme.com password
+
+## Developer Notes
+    - Docker architecture for Nginx, MySql, PHP, pHpMyAdmin
+    - Used design patterns: 
+        * Service-Repository pattern 
+            CustomerService [
+                UserRepository, 
+                ActivityRepository, 
+                CommentRepository
+            ] // to decouple Logic from Presenter
+        * CsrfMiddleware
+    - Unit Testing: at "- Run all tests" section
+    - To Login with "admin/operator" role - http://127.0.0.1:8080/sign/in
+
 ## Technologies Used
 
    - Docker
@@ -37,20 +59,17 @@ services:
 ```
 $ make init
 ```
+
+At "/var/www/star/api$" directory:
+  * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api/temp`
+  * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api/log`
+  * `docker compose exec app composer install`
+  * `docker compose exec app vendor/bin/phinx migrate`
+  * `docker compose exec app vendor/bin/phinx seed:run`
+
 ```
 $ make up
 ```
-
-- From the ***/var/www/star*** directory:
-  * `docker compose exec -u 0 app chown -R www-data:www-data /var/www/star/api`
-  * `docker compose exec app vendor/bin/phinx migrate`
-  * `docker compose exec app vendor/bin/phinx seed:run`
-    
-- Admin credentials:
-   * Admin: admin@admin.com password
-   * Operator/Customer: email-vary@email-vary.com password (email-vary look in db)
-    
-At "/var/www/star/api$"
 
 - Check Logs:
    `cat log/exception.log | tail -n 50`
@@ -59,14 +78,11 @@ At "/var/www/star/api$"
    `sudo rm -rf temp/cache/*`
 
 - Run all tests: (visual resulting with "TEST SUITE SUMMARY")
-  `sudo rm -rf temp/tests/*`
-  `docker compose exec app php tests/run.php`
+  * `sudo rm -rf temp/tests/*`
+  * `docker compose exec app php tests/run.php`
   
 ## app
 http://127.0.0.1:8080/
-
-## frontend
-http://127.0.0.1:8082/
 
 ## phpmyadmin
 http://127.0.0.1:8081/
@@ -84,16 +100,6 @@ http://127.0.0.1:8081/
    - `docker logs -f <container_id>` - see incoming logs for container
    - Show tree Directory/Files in a container: 
      ``` $ find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'```
-
-## Developer Notes
-    - Docker architecture for Nginx, MySql, PHP, pHpMyAdmin
-    - Nette Framework use: 
-        Service-Repository pattern 
-            * Used by CustomerService [User + Activity + Comment] to decouple Logic from Presenter
-        CsrfMiddleware
-        Unit Testing: at "- Run all tests" section
-    - Customer management - http://127.0.0.1:8080/
-    - Login "admin/operator" role - http://127.0.0.1:8080/sign/in
 
 ## TODO list
     - Enum activitiy-comment "type"
