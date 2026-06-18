@@ -128,67 +128,8 @@
 	</div>
 </div>
 
-<div id="activityDetailsModal" class="modal-backdrop">
-	<div class="modal-content-box modal-content-box-inspect">
+{control activityDetailsModal}
 
-		<div class="modal-header-row">
-			<span id="inspectType" class="badge-type"></span>
-			<small id="inspectTime" class="modal-inspect-time"></small>
-		</div>
+{control activityModal}
 
-		<div class="modal-highlight-block">
-			<label class="modal-section-label modal-section-label-small">Activity</label>
-			<p id="inspectDetailDisplay" class="modal-body-p"></p>
-		</div>
-
-		<label class="modal-section-label">Comments</label>
-		<div id="modalCommentsFeed" class="modal-comments-feed"></div>
-
-		<form id="addActivityCommentForm" data-token="{$_sec ?? $token ?? $csrfToken ?? ''}">
-			<input type="hidden" id="inspectActivityId" name="activityId">
-
-			<div style="margin-bottom: 1rem;">
-				<textarea id="newSubCommentText" name="commentText" rows="2" required placeholder="Write comment here ..." class="modal-textarea"></textarea>
-			</div>
-
-			<div class="modal-actions-row">
-				<button type="button" onclick="closeActivityCommentsModal()" class="btn-modal-close">Close</button>
-				<button type="submit" class="btn-modal-save">Add comment</button>
-			</div>
-		</form>
-
-	</div>
-</div>
-
-<div id="activityModal" class="modal-backdrop">
-	<div class="modal-content-box modal-content-box-action">
-
-		<h4 class="modal-title-h4">Add Activity</h4>
-		<p id="modalCustomerName" class="modal-subtitle-p"></p>
-
-		<form id="activityForm" data-token="{$csrfToken}">
-			<input type="hidden" id="modalCustomerId" name="customerId">
-
-			<div style="margin-bottom: 1rem;">
-				<label class="modal-section-label">Log Classification Type</label>
-				<select name="type" id="activityTypeSelector" class="modal-select">
-					<option value="COMMENT">Comment</option>
-					<option value="CALL">Call</option>
-					<option value="EMAIL">Email</option>
-					<option value="MEETING">Meeting</option>
-				</select>
-			</div>
-
-			<div style="margin-bottom: 1.25rem;">
-				<label class="modal-section-label">Activity Details</label>
-				<textarea id="activityText" name="comment" rows="4" required placeholder="Type customer update notes here..." class="modal-textarea modal-textarea-resizable"></textarea>
-			</div>
-
-			<div class="modal-actions-row">
-				<button type="button" onclick="closeActivityModal()" class="btn-modal-action-cancel">Cancel</button>
-				<button type="submit" class="btn-modal-save btn-modal-action-save">Save Activity</button>
-			</div>
-		</form>
-	</div>
-</div>
 {/block}

@@ -17,6 +17,8 @@ final class HomePresenter extends Nette\Application\UI\Presenter
 
     /** @persistent */
     public ?int $selectedCustomerId = null;
+
+    private string $token;
     
     public function __construct(
         private CustomerService $customerService
@@ -38,25 +40,24 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             $this->flashMessage('Access denied. Insufficient account privileges.', 'danger');
             $this->redirect('Sign:in');
         }
-    }
 
-    public function renderDefault(): void
-    {
+        // CSRF token preparation
         $session = $this->getSession();
         if (!$session->isStarted()) {
             $session->start();
         }
 
-        // Force get or create a token space in Nette's standard location
         $section = $session->getSection('Nette.Forms.Csrf/token');
         if (!isset($section->token)) {
             $section->token = bin2hex(random_bytes(16));
         }
+        $this->token = $section->token;
+    }
 
-        $this->template->csrfToken = $section->token;
-
-        $hasSignalAction = (bool) $this->getParameter('do');
-        if ($this->isAjax() && !$hasSignalAction) {
+    public function renderDefault(): void
+    {
+        // Clean up AJAX signal tracking state
+        if ($this->isAjax() && !$this->getParameter('do')) {
             $this->selectedCustomerId = null;
         }
 
@@ -68,7 +69,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             $this->selectedCustomerId
         );
 
-        // Bind parameter states to the template view
+        // Bind parameters cleanly to template
         $this->template->search = $this->search;
         $this->template->status = $this->status;
         $this->template->sort = $this->sort;
@@ -77,11 +78,22 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         $this->template->selectedCustomer = $dashboardData['selectedCustomer'];
         $this->template->activities = $dashboardData['activities'];
 
-        // Redraw target layout blocks
         if ($this->isAjax()) {
             $this->redrawControl('customersSnippet');
             $this->redrawControl('activitiesSnippet');
         }
+    }
+
+    // Activity Modal
+    protected function createComponentActivityModal(): Components\ActivityModalControl
+    {
+        return new Components\ActivityModalControl((string)$this->token);
+    }
+
+    // Activity Details Modal
+    protected function createComponentActivityDetailsModal(): Components\ActivityDetailsModalControl
+    {
+        return new Components\ActivityDetailsModalControl((string)$this->token);
     }
 
     // Get Customer-Activities

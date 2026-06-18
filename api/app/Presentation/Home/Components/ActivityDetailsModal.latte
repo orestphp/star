@@ -1,0 +1,32 @@
+{* [app/Presentation/Home/Components/ActivityDetailsModal.latte] *}
+<div id="activityDetailsModal" class="modal-backdrop">
+    <div class="modal-content-box modal-content-box-inspect">
+
+        <div class="modal-header-row">
+            <span id="inspectType" class="badge-type"></span>
+            <small id="inspectTime" class="modal-inspect-time"></small>
+        </div>
+
+        <div class="modal-highlight-block">
+            <label class="modal-section-label modal-section-label-small">Activity</label>
+            <p id="inspectDetailDisplay" class="modal-body-p"></p>
+        </div>
+
+        <label class="modal-section-label">Comments</label>
+        <div id="modalCommentsFeed" class="modal-comments-feed"></div>
+
+        <form id="addActivityCommentForm" data-token="{$csrfToken}">
+            <input type="hidden" id="inspectActivityId" name="activityId">
+
+            <div style="margin-bottom: 1rem;">
+                <textarea id="newSubCommentText" name="commentText" rows="2" required placeholder="Write comment here ..." class="modal-textarea"></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+                <button type="button" onclick="closeActivityCommentsModal()" class="btn-modal-close">Close</button>
+                <button type="submit" class="btn-modal-save">Add comment</button>
+            </div>
+        </form>
+
+    </div>
+</div>

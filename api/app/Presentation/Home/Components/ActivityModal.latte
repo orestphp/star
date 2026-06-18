@@ -1,0 +1,32 @@
+{* [app/Presentation/Home/Components/ActivityModal.latte] *}
+<div id="activityModal" class="modal-backdrop">
+    <div class="modal-content-box modal-content-box-action">
+
+        <h4 class="modal-title-h4">Add Activity</h4>
+        <p id="modalCustomerName" class="modal-subtitle-p"></p>
+
+        <form id="activityForm" data-token="{$csrfToken}">
+            <input type="hidden" id="modalCustomerId" name="customerId">
+
+            <div style="margin-bottom: 1rem;">
+                <label class="modal-section-label">Comment Type</label>
+                <select name="type" id="activityTypeSelector" class="modal-select">
+                    <option value="COMMENT">Comment</option>
+                    <option value="CALL">Call</option>
+                    <option value="EMAIL">Email</option>
+                    <option value="MEETING">Meeting</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+                <label class="modal-section-label">Activity Details</label>
+                <textarea id="activityText" name="comment" rows="4" required placeholder="Type customer update notes here..." class="modal-textarea modal-textarea-resizable"></textarea>
+            </div>
+
+            <div class="modal-actions-row">
+                <button type="button" onclick="closeActivityModal()" class="btn-modal-action-cancel">Cancel</button>
+                <button type="submit" class="btn-modal-save btn-modal-action-save">Save Activity</button>
+            </div>
+        </form>
+    </div>
+</div>
