@@ -31,10 +31,10 @@ final class HomePresenter extends Nette\Application\UI\Presenter
             $this->redirect('Sign:in');
         }
 
-        // Role validation
-        $userRole = $this->getUser()->getRoles()[0] ?? ''; // Returns array of roles from SimpleIdentity
+        // Home/Dashboard Authorization check
+        $userRole = $this->getUser()->getRoles()[0] ?? '';
         if (!in_array($userRole, ['admin', 'operator'], true)) {
-            $this->getUser()->logout(true); // Evict user identity structure completely
+            $this->getUser()->logout(true);
             $this->flashMessage('Access denied. Insufficient account privileges.', 'danger');
             $this->redirect('Sign:in');
         }
@@ -84,6 +84,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
+    // Get Customer-Activities
     public function handleLoadActivities(int $customerId): void
     {
         $this->selectedCustomerId = $customerId;
@@ -95,6 +96,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
+    // Add Customer-Activity
     public function handleAddActivity(int $customerId, string $comment, string $type = 'COMMENT'): void
     {
         $this->customerService->createActivity($customerId, $comment, $type);
@@ -107,12 +109,14 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
     }
 
+    // Get Customer-Activity-Comments
     public function handleGetComments(int $activityId): void
     {
         $comments = $this->customerService->getActivityComments($activityId);
         $this->sendJson(['comments' => $comments]);
     }
 
+    // Add Customer-Activity-Comment
     public function handleAddActivityComment(): void
     {
         $activityId = (int) $this->getParameter('activityId');
