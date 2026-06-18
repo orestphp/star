@@ -144,7 +144,7 @@
 		<label class="modal-section-label">Comments</label>
 		<div id="modalCommentsFeed" class="modal-comments-feed"></div>
 
-		<form id="addActivityCommentForm">
+		<form id="addActivityCommentForm" data-token="{$_sec ?? $token ?? $csrfToken ?? ''}">
 			<input type="hidden" id="inspectActivityId" name="activityId">
 
 			<div style="margin-bottom: 1rem;">

@@ -40,7 +40,6 @@ function escapeHtml(str) {
 $(document).ready(function() {
 
     // Activity Form
-// Activity Form Submission Handler
     $('#activityForm').on('submit', function(e) {
         e.preventDefault();
 
@@ -147,9 +146,7 @@ $(document).ready(function() {
 
         var activityId = $('#inspectActivityId').val();
         var txt        = $('#newSubCommentText').val();
-
-        // Safe extraction approach to guarantee security token delivery survival lines
-        var token      = $('#activityForm').attr('data-token') || $('#activityForm').data('token');
+        var token      = $('#addActivityCommentForm').attr('data-token') || $('#addActivityCommentForm').data('token');
 
         if (!txt.trim()) return;
 

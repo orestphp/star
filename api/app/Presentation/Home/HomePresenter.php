@@ -42,28 +42,46 @@ final class HomePresenter extends Nette\Application\UI\Presenter
 
     public function renderDefault(): void
     {
-        $data = $this->customerService->getCustomerManagementData(
+        $session = $this->getSession();
+        if (!$session->isStarted()) {
+            $session->start();
+        }
+
+        // Force get or create a token space in Nette's standard location
+        $section = $session->getSection('Nette.Forms.Csrf/token');
+        if (!isset($section->token)) {
+            $section->token = bin2hex(random_bytes(16));
+        }
+
+        $this->template->csrfToken = $section->token;
+
+        $hasSignalAction = (bool) $this->getParameter('do');
+        if ($this->isAjax() && !$hasSignalAction) {
+            $this->selectedCustomerId = null;
+        }
+
+        // Gather dashboard context datasets
+        $dashboardData = $this->customerService->getCustomerManagementData(
             $this->search,
             $this->status,
             $this->sort,
             $this->selectedCustomerId
         );
 
-        $this->template->customers = $data['customers'];
-        $this->template->selectedCustomer = $data['selectedCustomer'];
-        $this->template->activities = $data['activities'];
-
+        // Bind parameter states to the template view
         $this->template->search = $this->search;
         $this->template->status = $this->status;
         $this->template->sort = $this->sort;
 
-        // Redraw the customer snippet block if requested via AJAX search/filters
+        $this->template->customers = $dashboardData['customers'];
+        $this->template->selectedCustomer = $dashboardData['selectedCustomer'];
+        $this->template->activities = $dashboardData['activities'];
+
+        // Redraw target layout blocks
         if ($this->isAjax()) {
             $this->redrawControl('customersSnippet');
+            $this->redrawControl('activitiesSnippet');
         }
-
-        $section = $this->getSession()->getSection('Nette.Forms.Form');
-        $this->template->csrfToken = $section->token ??= Nette\Utils\Random::generate();
     }
 
     public function handleLoadActivities(int $customerId): void
@@ -106,7 +124,7 @@ final class HomePresenter extends Nette\Application\UI\Presenter
         }
 
         $userId = $this->getUser()->getId() ?? 1;
-        $this->customerService->addCommentToActivity($activityId, $userId, $text);
+        $this->customerService->addCommentToActivity($activityId, $userId, (string)$text);
 
         $this->sendJson(['success' => true]);
     }

@@ -19,7 +19,6 @@ class CsrfMiddlewareListener
 
     public function __invoke(Nette\Application\Application $application, Nette\Application\IPresenter $presenter): void
     {
-        // Change type-hint above to IPresenter, and guard here
         if (!$presenter instanceof Presenter) {
             return;
         }
@@ -33,11 +32,17 @@ class CsrfMiddlewareListener
             }
 
             $passedToken = $this->httpRequest->getPost('_sec') ?: $presenter->getParameter('_sec');
-            $expectedToken = $this->session->getSection('Nette.Forms.Form')->token;
 
-            if (!$passedToken || !$expectedToken || !hash_equals($expectedToken, $passedToken)) {
+            $expectedToken = $this->session->getSection('Nette.Forms.Csrf/token')->token;
+
+            if ($expectedToken === null) {
+                $expectedToken = $this->session->getSection('Nette.Forms.Form')->token;
+            }
+
+            if (!$passedToken || !$expectedToken || !hash_equals((string)$expectedToken, (string)$passedToken)) {
                 $this->httpResponse->setCode(Nette\Http\IResponse::S403_FORBIDDEN);
                 $presenter->sendJson(['success' => false, 'error' => 'Global CSRF validation failed.']);
+                return;
             }
         }
     }

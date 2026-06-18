@@ -3,9 +3,12 @@ $(document).ready(function() {
 
     // Search via AJAX
     function triggerFilterUpdate() {
-        var $form = $('#customerFilterForm');
+        var $form     = $('#customerFilterForm');
         var targetUrl = $form.attr('action') || window.location.pathname;
-        var formData = $form.serialize();
+        var formData  = $form.serialize();
+
+        // Deselect any highlighted customer rows instantly on the UI
+        $('.customer-row').removeClass('selected-row');
 
         $.ajax({
             url: targetUrl,
