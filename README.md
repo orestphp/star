@@ -99,5 +99,4 @@ http://127.0.0.1:8081/
     - Enum activitiy-comment "type"
     - Date format in "created_at" in View
     - Paginate Activity list: * Max 50 recent records shown
-    - Move CSS from "Home/default.latte" to "customer.css"
-    - Move JS from "Sign/default.latte" to "sign.js"
+    - Decouple JS & CSS from "Sign/default.latte"
